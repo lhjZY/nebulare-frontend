@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { logout } from "@/services/auth";
+import { logout } from "@/api/auth";
 
 export default function AvatarMenu() {
   const navigate = useNavigate();

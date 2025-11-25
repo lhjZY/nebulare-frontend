@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { register, verify } from "@/services/auth";
+import { register, verify } from "@/api/auth";
 import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {

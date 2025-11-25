@@ -17,6 +17,11 @@ type AuthConfig = InternalAxiosRequestConfig & {
   _retry?: boolean; // 避免重复重试
 };
 
+export type AuthRequestConfig = AxiosRequestConfig & {
+  skipAuth?: boolean;
+  skipRefresh?: boolean;
+};
+
 const TOKEN_KEY = "tickclone.tokens";
 
 export const tokenStorage = {
@@ -126,11 +131,28 @@ api.interceptors.response.use(
 );
 
 // 统一的请求封装，默认返回 data
-export async function request<T = any>(
-  config: AxiosRequestConfig & { skipAuth?: boolean; skipRefresh?: boolean }
-): Promise<T> {
+export async function request<T = any>(config: AuthRequestConfig): Promise<T> {
   const res: AxiosResponse<T> = await api.request(config);
   return res.data;
 }
 
 export { api };
+
+// 轻量 axios 包装，按 method 分类，统一走 request
+export const defHttp = {
+  get<T = any>(config: AuthRequestConfig) {
+    return request<T>({ ...config, method: "get" });
+  },
+  post<T = any>(config: AuthRequestConfig) {
+    return request<T>({ ...config, method: "post" });
+  },
+  put<T = any>(config: AuthRequestConfig) {
+    return request<T>({ ...config, method: "put" });
+  },
+  patch<T = any>(config: AuthRequestConfig) {
+    return request<T>({ ...config, method: "patch" });
+  },
+  delete<T = any>(config: AuthRequestConfig) {
+    return request<T>({ ...config, method: "delete" });
+  }
+};

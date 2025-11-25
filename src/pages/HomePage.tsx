@@ -16,6 +16,7 @@ export default function HomePage() {
     useAppStore();
   const { syncNow, isSyncing, lastError, lastRun } = useSync();
   const [newTitle, setNewTitle] = useState("");
+  const [newStartDate, setNewStartDate] = useState<number | undefined>(undefined);
 
   React.useEffect(() => {
     setSyncState({ isSyncing, lastError: lastError ?? null, lastRun });
@@ -58,9 +59,10 @@ export default function HomePage() {
     const title = newTitle.trim();
     if (!title) return;
     const projectId = selectedProjectId ?? "inbox";
-    const task = createLocalTask({ id: uuid(), projectId, title });
+    const task = createLocalTask({ id: uuid(), projectId, title, startDate: newStartDate });
     await db.tasks.put(task);
     setNewTitle("");
+    setNewStartDate(undefined);
     syncNow();
   };
 
@@ -83,6 +85,8 @@ export default function HomePage() {
           selectedTaskId={selectedTaskId}
           newTitle={newTitle}
           onChangeTitle={setNewTitle}
+          newStartDate={newStartDate}
+          onChangeStartDate={setNewStartDate}
           onSubmit={handleAdd}
           isSyncing={syncState.isSyncing}
           lastError={syncState.lastError}

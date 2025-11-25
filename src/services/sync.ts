@@ -1,28 +1,6 @@
 import Dexie from "dexie";
 import { db, mapApiProjectToLocal, mapApiTaskToLocal, mapLocalProjectToApi, mapLocalTaskToApi } from "@/db";
-import { request } from "@/utils/http";
-
-type SyncChanges<T> = {
-  add: T[];
-  update: T[];
-  delete: string[];
-};
-
-type SyncPayload = {
-  checkPoint: number;
-  changes: {
-    tasks: SyncChanges<any>;
-    projects: SyncChanges<any>;
-  };
-};
-
-type SyncResponse = {
-  checkPoint: number;
-  updates: {
-    tasks?: any[];
-    projects?: any[];
-  };
-};
+import { postSync, SyncChanges, SyncPayload, SyncResponse } from "@/api/sync";
 
 const CHECKPOINT_KEY = "checkPoint";
 
@@ -31,7 +9,8 @@ export async function syncOnce(): Promise<{
   downloaded: number;
   checkPoint: number;
 }> {
-  const checkPoint = ((await db.meta.get(CHECKPOINT_KEY))?.value as number) ?? 0;
+  const checkPointRecord = await db.meta.get(CHECKPOINT_KEY);
+  const checkPoint = (checkPointRecord?.value as number) ?? 0;
 
   const [dirtyTasks, dirtyProjects] = await Promise.all([db.tasks.toArray(), db.projects.toArray()]);
 
@@ -41,7 +20,7 @@ export async function syncOnce(): Promise<{
   const hasChanges =
     pendingTasks.length > 0 ||
     pendingProjects.length > 0 ||
-    (checkPoint == 0 && (await db.meta.get(CHECKPOINT_KEY)) == nil);
+    (checkPoint === 0 && checkPointRecord == null);
 
   // 没有脏数据且已有 checkpoint 时，直接跳过请求
   if (!hasChanges) {
@@ -62,11 +41,7 @@ export async function syncOnce(): Promise<{
     changes
   };
 
-  const res = await request<SyncResponse>({
-    method: "post",
-    url: "/sync",
-    data: payload
-  });
+  const res = await postSync(payload);
 
   const updates = res?.updates ?? {};
   const newCheckPoint = res?.checkPoint ?? checkPoint;

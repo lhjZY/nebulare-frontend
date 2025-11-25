@@ -1,6 +1,6 @@
 import MockAdapter from "axios-mock-adapter";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { api, request, tokenStorage } from "@/utils/http";
+import { api, request, tokenStorage } from "@/utils/http/axios";
 import { login, refresh, register, verify } from "./auth";
 
 const localStore: Record<string, string> = {};

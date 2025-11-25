@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import TaskItem from "./TaskItem";
 import { Task } from "@/db/schema";
 import { TaskGroup } from "./types";
+
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import {
   AlertDialog,
@@ -17,15 +18,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from "@/components/ui/alert-dialog";
-import { useState } from "react";
-
+import { useRef, useState } from "react";
+import { DatePicker } from "@/components/ui/date-picker";
+import { cn } from "@/lib/utils";
 type Props = {
   groups: TaskGroup[];
   projectLookup: Map<string, string>;
   onSelectTask: (id: string | null) => void;
   selectedTaskId: string | null;
   newTitle: string;
+  newStartDate?: number;
   onChangeTitle: (v: string) => void;
+  onChangeStartDate: (v: number | undefined) => void;
   onSubmit: (e: React.FormEvent) => void;
   isSyncing: boolean;
   lastError: string | null;
@@ -38,13 +42,19 @@ export default function TaskColumn({
   onSelectTask,
   selectedTaskId,
   newTitle,
+  newStartDate,
   onChangeTitle,
+  onChangeStartDate,
   onSubmit,
   isSyncing,
   lastError,
   onDeleteTask
 }: Props) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [inputFocused, setInputFocused] = useState(false);
+  const isInputEmpty = newTitle.trim() === "";
+  const showDatePicker = inputFocused || !isInputEmpty;
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleConfirmDelete = async () => {
     if (!pendingDeleteId) return;
@@ -61,16 +71,32 @@ export default function TaskColumn({
         </Button>
       </CardHeader>
       <CardContent className="flex-1 overflow-auto space-y-4">
-        <form onSubmit={onSubmit} className="flex items-center gap-2">
+        <form onSubmit={onSubmit} className="group relative flex items-center gap-2">
           <Input
-            placeholder="添加任务至 '收集箱'"
+            placeholder="➕ 添加任务"
             value={newTitle}
             onChange={(e) => onChangeTitle(e.target.value)}
-            className="focus-visible:ring-offset-1 mt-1"
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
+            ref={inputRef}
+            className={cn(
+              "focus-visible:ring-offset-1 mt-1 w-full pr-[170px] transition-colors",
+              !inputFocused && isInputEmpty ? "bg-gray-100" : "bg-white"
+            )}
           />
-          <Button type="submit" size="sm">
-            <Plus className="h-4 w-4" />
-          </Button>
+          <div
+            className={cn(
+              "absolute inset-y-0 right-0 flex items-center pr-2 transition-opacity duration-150",
+              showDatePicker ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            )}
+          >
+            <DatePicker
+              value={newStartDate}
+              onChange={onChangeStartDate}
+              triggerClassName="pointer-events-auto w-[150px]"
+              onConfirm={() => inputRef.current?.focus()}
+            />
+          </div>
         </form>
         {isSyncing && <p className="text-xs text-outline">同步中...</p>}
         {lastError && <p className="text-xs text-red-500">同步失败: {lastError}</p>}
