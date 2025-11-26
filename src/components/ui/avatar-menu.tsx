@@ -2,7 +2,11 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@/api/auth";
 
-export default function AvatarMenu() {
+type AvatarMenuProps = {
+  onOpenThemeDialog?: () => void;
+};
+
+export default function AvatarMenu({ onOpenThemeDialog }: AvatarMenuProps) {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
 
@@ -23,6 +27,15 @@ export default function AvatarMenu() {
       </button>
       {open ? (
         <div className="absolute left-12 top-0 z-50 w-40 rounded-xl border border-outline/20 bg-white shadow-md">
+          <button
+            className="w-full px-4 py-3 text-left text-sm hover:bg-surface-variant"
+            onClick={() => {
+              setOpen(false);
+              onOpenThemeDialog?.();
+            }}
+          >
+            主题
+          </button>
           <button
             className="w-full px-4 py-3 text-left text-sm hover:bg-surface-variant"
             onClick={handleLogout}

@@ -4,6 +4,9 @@
 
 :root {
   color-scheme: light;
+  --theme-primary: #ffffff;
+  --theme-aside-bg: #ffffff;
+  --theme-input-border: #e5e7eb;
 }
 
 body {
