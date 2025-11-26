@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { syncOnce } from "@/services/sync";
 
 type UseSyncOptions = {
-  intervalMs?: number;
+  intervalMs?: number
   debounceMs?: number;
 };
 
@@ -71,6 +71,6 @@ export function useSync(options: UseSyncOptions = {}) {
     isSyncing,
     lastError,
     lastRun,
-    syncNow
+    syncNow,
   };
 }

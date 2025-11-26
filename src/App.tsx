@@ -2,13 +2,13 @@ import React from "react";
 import { Link, Route, Routes, useLocation } from "react-router-dom";
 import { Palette, ListTodo } from "lucide-react";
 import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
+import AuthPage from "./pages/LoginPage";
 import AvatarMenu from "@/components/ui/avatar-menu";
 
 function App() {
   const location = useLocation();
-  const hideSidebar = location.pathname === "/login";
+  const hideSidebar =
+    location.pathname === "/login" || location.pathname === "/register";
 
   return (
     <div className="min-h-screen bg-surface text-on-surface">
@@ -36,8 +36,8 @@ function App() {
           <div className="h-full bg-white shadow-sm">
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/login" element={<AuthPage />} />
+              <Route path="/register" element={<AuthPage />} />
             </Routes>
           </div>
         </main>

@@ -35,6 +35,7 @@ export default function TaskItem({ task, projectName, selected, onSelect, onDele
         <div className="text-sm">{task.title}</div>
         <div className="flex items-center gap-3 text-xs text-outline">
           <span>{projectName}</span>
+          <span>{formatDate(task.startDate)}</span>
           <span className={cn(isOverdue(task.dueDate) && "text-red-500")}>{formatDate(task.dueDate)}</span>
         </div>
       </div>
