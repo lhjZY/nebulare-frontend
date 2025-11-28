@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@/api/auth";
-
+import {Palette,LogOut } from 'lucide-react'
 type AvatarMenuProps = {
   onOpenThemeDialog?: () => void;
 };
@@ -28,19 +28,21 @@ export default function AvatarMenu({ onOpenThemeDialog }: AvatarMenuProps) {
       {open ? (
         <div className="absolute left-12 top-0 z-50 w-40 rounded-xl border border-outline/20 bg-white shadow-md">
           <button
-            className="w-full px-4 py-3 text-left text-sm hover:bg-surface-variant"
+            className="w-full px-4 py-3 text-left text-sm hover:bg-surface-variant flex items-center justify-start"
             onClick={() => {
               setOpen(false);
               onOpenThemeDialog?.();
             }}
           >
-            主题
+            <Palette className="w-4 h-4" />
+            <span className="pl-2">更换主题</span>
           </button>
           <button
-            className="w-full px-4 py-3 text-left text-sm hover:bg-surface-variant"
+            className="w-full px-4 py-3 text-left text-sm hover:bg-surface-variant flex items-center justify-start"
             onClick={handleLogout}
           >
-            退出登录
+            <LogOut className="w-4 h-4" />
+            <span className="pl-2">退出登录</span>
           </button>
         </div>
       ) : null}

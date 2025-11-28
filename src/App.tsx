@@ -1,11 +1,9 @@
 import React from "react";
-import { Link, Route, Routes, useLocation } from "react-router-dom";
-import { Palette, ListTodo } from "lucide-react";
+import { Route, Routes, useLocation } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import AuthPage from "./pages/LoginPage";
-import AvatarMenu from "@/components/ui/avatar-menu";
 import { ThemePaletteDialog } from "@/components/theme/ThemePaletteDialog";
-
+import Sidebar from '@/components/layout/Sidebar'
 function App() {
   const location = useLocation();
   const [themeDialogOpen, setThemeDialogOpen] = React.useState(false);
@@ -16,23 +14,7 @@ function App() {
     <div className="min-h-screen bg-surface text-on-surface">
       <div className="flex h-screen">
         {!hideSidebar && (
-          <aside className="w-16 flex flex-col items-center gap-4 border-r border-outline/10 bg-[var(--theme-aside-bg)] py-4 transition-colors">
-            <AvatarMenu onOpenThemeDialog={() => setThemeDialogOpen(true)} />
-            <Link
-              className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-surface-variant"
-              to="/"
-              title="Todo"
-            >
-              <ListTodo className="h-5 w-5" />
-            </Link>
-            <button
-              className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-surface-variant"
-              onClick={() => setThemeDialogOpen(true)}
-              aria-label="切换主题"
-            >
-              <Palette className="h-5 w-5" />
-            </button>
-          </aside>
+          <Sidebar setThemeDialogOpen={setThemeDialogOpen} />
         )}
 
         <main className="flex-1">

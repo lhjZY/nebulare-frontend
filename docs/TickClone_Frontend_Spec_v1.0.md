@@ -59,7 +59,7 @@ graph TD
 |**Icons**|Material Symbols|(Google)|Google 官方字体图标|
 |**Date**|Day.js|1.x|轻量级日期处理|
 |**UUID**|uuid|9.x|**关键**：前端生成业务 ID (v4)|
-
+Lucide-React 开源图标库
 ---
 
 ## 3. 数据库设计 (Local Database Schema)
