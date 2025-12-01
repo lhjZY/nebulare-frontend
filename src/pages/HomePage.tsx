@@ -66,6 +66,12 @@ export default function HomePage() {
     syncNow();
   };
 
+  // 项目创建后的处理函数
+  const handleProjectCreated = () => {
+    // 触发同步，从服务器获取最新的项目列表
+    syncNow();
+  };
+
   return (
     <PanelGroup direction="horizontal" className="h-full">
       <Panel defaultSize={20} minSize={12} maxSize={60}>
@@ -74,6 +80,7 @@ export default function HomePage() {
           tasks={tasks ?? []}
           selectedProjectId={selectedProjectId}
           onSelectProject={setSelectedProject}
+          onProjectCreated={handleProjectCreated}
         />
       </Panel>
       <ResizeHandle />

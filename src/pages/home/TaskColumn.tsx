@@ -18,7 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from "@/components/ui/alert-dialog";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DatePicker } from "@/components/ui/date-picker";
 import { cn } from "@/lib/utils";
 type Props = {
@@ -52,6 +52,8 @@ export default function TaskColumn({
 }: Props) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [inputFocused, setInputFocused] = useState(false);
+  const [openGroups, setOpenGroups] = useState<string[]>([]);
+  const hasAutoOpened = useRef(false);
   const isInputEmpty = newTitle.trim() === "";
   const showDatePicker = inputFocused || !isInputEmpty;
   const inputRef = useRef<HTMLInputElement>(null);
@@ -61,6 +63,23 @@ export default function TaskColumn({
     await onDeleteTask(pendingDeleteId);
     setPendingDeleteId(null);
   };
+
+  useEffect(() => {
+    setOpenGroups((prev) => {
+      const available = new Set(groups.map((group) => group.group));
+      const cleanedPrev = prev.filter((value) => available.has(value));
+
+      if (!hasAutoOpened.current) {
+        const groupsWithTasks = groups.filter((group) => group.tasks.length > 0).map((group) => group.group);
+        if (groupsWithTasks.length > 0) {
+          hasAutoOpened.current = true;
+          return groupsWithTasks;
+        }
+      }
+
+      return cleanedPrev;
+    });
+  }, [groups]);
 
   return (
     <Card className="flex h-full flex-col">
@@ -73,7 +92,7 @@ export default function TaskColumn({
       <CardContent className="flex-1 overflow-auto space-y-4">
         <form onSubmit={onSubmit} className="group relative flex items-center gap-2">
           <Input
-            placeholder="➕ 添加任务"
+            placeholder="+ 添加任务"
             value={newTitle}
             onChange={(e) => onChangeTitle(e.target.value)}
             onFocus={() => setInputFocused(true)}
@@ -100,7 +119,7 @@ export default function TaskColumn({
         </form>
         {isSyncing && <p className="text-xs text-outline">同步中...</p>}
         {lastError && <p className="text-xs text-red-500">同步失败: {lastError}</p>}
-        <Accordion type="multiple" className="space-y-2">
+        <Accordion type="multiple" className="space-y-2" value={openGroups} onValueChange={setOpenGroups}>
           {groups.map((group) => (
             <AccordionItem key={group.group} value={group.group}>
               <AccordionTrigger>
