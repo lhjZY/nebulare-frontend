@@ -1,5 +1,5 @@
 import React from "react";
-import { Filter } from "lucide-react";
+import { Filter, PanelLeftClose, PanelRightClose } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +34,11 @@ type Props = {
   isSyncing: boolean;
   lastError: string | null;
   onDeleteTask: (id: string) => void;
+  onToggleComplete: (taskId: string, completed: boolean) => void;
+  columnTitle: string;
+  inputPlaceholder: string;
+  sidebarCollapsed: boolean;
+  onToggleSidebar: () => void;
 };
 
 export default function TaskColumn({
@@ -48,12 +53,16 @@ export default function TaskColumn({
   onSubmit,
   isSyncing,
   lastError,
-  onDeleteTask
+  onDeleteTask,
+  onToggleComplete,
+  columnTitle,
+  inputPlaceholder,
+  sidebarCollapsed,
+  onToggleSidebar
 }: Props) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [inputFocused, setInputFocused] = useState(false);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
-  const hasAutoOpened = useRef(false);
   const isInputEmpty = newTitle.trim() === "";
   const showDatePicker = inputFocused || !isInputEmpty;
   const inputRef = useRef<HTMLInputElement>(null);
@@ -66,25 +75,34 @@ export default function TaskColumn({
 
   useEffect(() => {
     setOpenGroups((prev) => {
-      const available = new Set(groups.map((group) => group.group));
-      const cleanedPrev = prev.filter((value) => available.has(value));
-
-      if (!hasAutoOpened.current) {
-        const groupsWithTasks = groups.filter((group) => group.tasks.length > 0).map((group) => group.group);
-        if (groupsWithTasks.length > 0) {
-          hasAutoOpened.current = true;
-          return groupsWithTasks;
-        }
-      }
-
-      return cleanedPrev;
+      // 获取所有有任务的分组
+      const groupsWithTasks = new Set(
+        groups.filter((group) => group.tasks.length > 0).map((group) => group.group)
+      );
+      // 保留之前已展开且仍然存在的分组，同时添加新的有任务的分组
+      const merged = new Set([...prev.filter((g) => groupsWithTasks.has(g)), ...groupsWithTasks]);
+      return Array.from(merged);
     });
   }, [groups]);
 
   return (
     <Card className="flex h-full flex-col">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-xl font-semibold">所有</CardTitle>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="rounded-lg transition-transform duration-200"
+            onClick={onToggleSidebar}
+          >
+            {sidebarCollapsed ? (
+              <PanelRightClose className="h-4 w-4" />
+            ) : (
+              <PanelLeftClose className="h-4 w-4" />
+            )}
+          </Button>
+          <CardTitle className="text-xl font-semibold">{columnTitle}</CardTitle>
+        </div>
         <Button variant="ghost" size="sm" className="rounded-lg">
           <Filter className="h-4 w-4" />
         </Button>
@@ -92,7 +110,7 @@ export default function TaskColumn({
       <CardContent className="flex-1 overflow-auto space-y-4">
         <form onSubmit={onSubmit} className="group relative flex items-center gap-2">
           <Input
-            placeholder="+ 添加任务"
+            placeholder={inputPlaceholder}
             value={newTitle}
             onChange={(e) => onChangeTitle(e.target.value)}
             onFocus={() => setInputFocused(true)}
@@ -136,6 +154,7 @@ export default function TaskColumn({
                       selected={selectedTaskId === task.id}
                       onSelect={() => onSelectTask(task.id)}
                       onDelete={() => setPendingDeleteId(task.id)}
+                      onToggleComplete={onToggleComplete}
                     />
                   ))}
                 </div>

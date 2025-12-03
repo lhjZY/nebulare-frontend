@@ -67,6 +67,11 @@ export function isWeek(ts?: number) {
   return diff >= 0 && diff <= 6;
 }
 
+export function isTomorrow(ts?: number) {
+  if (!ts) return false;
+  return dayjs(ts).diff(dayjs(), "day") === 1;
+}
+
 export function isCompleted(status?: number) {
   return status !== undefined && status >= 2;
 }

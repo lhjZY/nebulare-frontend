@@ -100,3 +100,10 @@ function applyTheme(preset: ThemePreset) {
 - 性能：只在主题变化时写变量，不在 render 中重复写；Dialog 关闭后不卸载列表也可，避免重复构建色块。
 - 安全回退：找不到主题 id 时回退 default，防止 `localStorage` 异常导致空变量。
 - 文档与规范：在 `src/theme/README.md`（可选）记录变量含义与新增流程，保持团队一致性；Lint/格式遵循现有 ESLint/Prettier，命名与注释简洁、直译，符合 Google 风格强调清晰可读与小函数单一职责。
+#76babf slider bg
+#D3e8eb item bg
+#c3e1e4 item active bg
+
+#38426b
+#d7e9e2
+#e0e2e9
