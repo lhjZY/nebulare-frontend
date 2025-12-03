@@ -54,7 +54,7 @@ export default function TaskItem({ task, projectName, selected, onSelect, onDele
   return (
     <div
       className={cn(
-        "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left hover:bg-surface-variant cursor-pointer transition-all duration-300",
+        "group flex w-full items-center gap-3 rounded px-3 py-1 text-left hover:bg-surface-variant cursor-pointer transition-all duration-300",
         selected && "bg-surface-variant",
         isExiting && "opacity-0 scale-95 translate-y-4"
       )}
@@ -74,25 +74,33 @@ export default function TaskItem({ task, projectName, selected, onSelect, onDele
         onCheckedChange={handleCheckChange}
         onClick={(e) => e.stopPropagation()}
       />
-      <div className="flex-1">
-        <div className={cn("text-sm", completed && "line-through text-outline")}>{task.title}</div>
-        <div className="flex items-center gap-3 text-xs text-outline">
-          <span>{projectName}</span>
-          <span>{formatDate(task.startDate)}</span>
-          <span className={cn(isOverdue(task.dueDate) && "text-red-500")}>{formatDate(task.dueDate)}</span>
+      <div className="flex-1 min-w-0">
+        <div className={cn("text-sm truncate", completed && "line-through text-outline")}>{task.title}</div>
+        <div className="text-xs text-outline truncate">
+          {projectName}
         </div>
       </div>
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete();
-        }}
-        className="rounded-full p-1 text-outline hover:bg-surface-variant"
-        aria-label="删除任务"
-      >
-        <MoreHorizontal className="h-4 w-4" />
-      </button>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {task.dueDate && (
+          <span className={cn(
+            "text-xs text-outline",
+            isOverdue(task.dueDate) && "text-red-500"
+          )}>
+            {formatDate(task.dueDate)}
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
+          className="rounded-full p-1 text-outline hover:bg-surface-variant opacity-0 group-hover:opacity-100 transition-opacity"
+          aria-label="删除任务"
+        >
+          <MoreHorizontal className="h-4 w-4" />
+        </button>
+      </div>
     </div>
   );
 }

@@ -17,11 +17,11 @@ export function groupTasks(tasks: Task[]): TaskGroup[] {
       continue;
     }
 
-    if (!t.dueDate) {
+    if (!t.startDate) {
       nodate.push(t);
       continue;
     }
-    const due = dayjs(t.dueDate);
+    const due = dayjs(t.startDate);
     if (due.isBefore(now, "day")) {
       overdue.push(t);
     } else if (due.isSame(now, "day")) {

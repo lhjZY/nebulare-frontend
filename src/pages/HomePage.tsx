@@ -172,6 +172,7 @@ export default function HomePage() {
           projectLookup={projectLookup}
           onSelectTask={setSelectedTask}
           selectedTaskId={selectedTaskId}
+          selectedProjectId={selectedProjectId}
           newTitle={newTitle}
           onChangeTitle={setNewTitle}
           newStartDate={newStartDate}

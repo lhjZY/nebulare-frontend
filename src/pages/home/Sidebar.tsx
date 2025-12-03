@@ -1,13 +1,15 @@
 import React, { useMemo, useState } from "react";
-import { Inbox, ListChecks, Sun, Plus, ChevronDown, CalendarDays, Archive } from "lucide-react";
+import { Inbox, ListChecks, Sun, Plus, ChevronDown, CalendarDays, Archive, Logs, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Task } from "@/db/schema";
 import { isToday, isWeek, isTomorrow } from "./utils";
 import { ProjectModal } from "@/components/modals/ProjectModal";
-import { createProject, ProjectPayload } from "@/api/projects";
+import { DeleteProjectModal } from "@/components/modals/DeleteProjectModal";
+import { createProject, updateProject, deleteProject, ProjectPayload, ProjectResponse } from "@/api/projects";
 import { db } from "@/db";
 
 type SidebarProps = {
@@ -27,6 +29,12 @@ export default function Sidebar({
 }: SidebarProps) {
   const [projectModalOpen, setProjectModalOpen] = useState(false);
   const [projectsExpanded, setProjectsExpanded] = useState(true);
+  const [editingProject, setEditingProject] = useState<ProjectResponse | null>(null);
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; project: ProjectResponse | null }>({
+    open: false,
+    project: null,
+  });
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const counts = useMemo(() => {
     const map = new Map<string, number>();
@@ -40,9 +48,9 @@ export default function Sidebar({
 
   const smartLists = [
     { key: "all", label: "所有", icon: ListChecks, count: tasks.length },
-    { key: "today", label: "今天", icon: Sun, count: tasks.filter((t) => isToday(t.dueDate)).length },
-    { key: "tomorrow", label: "明天", icon: CalendarDays, count: tasks.filter((t) => isTomorrow(t.dueDate)).length },
-    { key: "week", label: "最近7天", icon: Archive, count: tasks.filter((t) => isWeek(t.dueDate)).length },
+    { key: "today", label: "今天", icon: Sun, count: tasks.filter((t) => isToday(t.startDate)).length },
+    { key: "tomorrow", label: "明天", icon: CalendarDays, count: tasks.filter((t) => isTomorrow(t.startDate)).length },
+    { key: "week", label: "最近7天", icon: Archive, count: tasks.filter((t) => isWeek(t.startDate)).length },
     { key: "inbox", label: "收集箱", icon: Inbox, count: tasks.filter((t) => t.projectId === "inbox").length },
   ];
 
@@ -73,6 +81,57 @@ export default function Sidebar({
     } catch (error) {
       console.error('Failed to create project:', error);
       throw error;
+    }
+  };
+
+  const handleUpdateProject = async (data: ProjectPayload) => {
+    if (!editingProject) return;
+    try {
+      const updatedProject = await updateProject(editingProject.id, data);
+      
+      // 更新本地数据库
+      await db.projects.put({
+        id: updatedProject.id,
+        name: updatedProject.name,
+        color: updatedProject.color,
+        kind: updatedProject.kind,
+        sortOrder: updatedProject.sortOrder,
+        parentId: updatedProject.parentId || '',
+        isDeleted: false,
+        syncStatus: 'synced',
+        modifiedTime: updatedProject.serverUpdateTime,
+      });
+      
+      setEditingProject(null);
+      
+      if (onProjectCreated) {
+        onProjectCreated();
+      }
+    } catch (error) {
+      console.error('Failed to update project:', error);
+      throw error;
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    if (!deleteModal.project) return;
+    
+    setDeleteLoading(true);
+    try {
+      await deleteProject(deleteModal.project.id);
+      
+      // 从本地数据库删除
+      await db.projects.delete(deleteModal.project.id);
+      
+      setDeleteModal({ open: false, project: null });
+      
+      if (onProjectCreated) {
+        onProjectCreated();
+      }
+    } catch (error) {
+      console.error('Failed to delete project:', error);
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -127,19 +186,26 @@ export default function Sidebar({
             {projectsExpanded && (
               <div className="space-y-1 pt-1">
                 {projects.map((p: any) => {
-                  const id = p.ID ?? p.id;
-                  const name = p.Name ?? p.name;
-                  const color = p.Color ?? p.color ?? "#c2e7ff";
+                  const project: ProjectResponse = {
+                    id: p.ID ?? p.id,
+                    name: p.Name ?? p.name,
+                    color: p.Color ?? p.color ?? "#c2e7ff",
+                    kind: p.Kind ?? p.kind ?? "TASK",
+                    sortOrder: p.SortOrder ?? p.sortOrder ?? 0,
+                    parentId: p.ParentId ?? p.parentId ?? "",
+                    isDeleted: p.IsDeleted ?? p.isDeleted ?? false,
+                    serverUpdateTime: p.ServerUpdateTime ?? p.serverUpdateTime ?? 0,
+                  };
                   return (
-                    <SidebarItem
-                      key={id}
-                      active={selectedProjectId === id}
-                      onClick={() => onSelectProject(id)}
-                    >
-                      <span className="h-2.5 w-2.5 rounded-full" style={{ background: color }} />
-                      <span className="flex-1">{name}</span>
-                      <Badge variant="muted">{counts.get(id) || 0}</Badge>
-                    </SidebarItem>
+                    <ProjectItem
+                      key={project.id}
+                      project={project}
+                      active={selectedProjectId === project.id}
+                      count={counts.get(project.id) || 0}
+                      onClick={() => onSelectProject(project.id)}
+                      onEdit={() => setEditingProject(project)}
+                      onDelete={() => setDeleteModal({ open: true, project })}
+                    />
                   );
                 })}
               </div>
@@ -153,6 +219,23 @@ export default function Sidebar({
         open={projectModalOpen}
         onClose={() => setProjectModalOpen(false)}
         onSubmit={handleCreateProject}
+      />
+
+      {/* 项目编辑弹窗 */}
+      <ProjectModal
+        open={!!editingProject}
+        project={editingProject}
+        onClose={() => setEditingProject(null)}
+        onSubmit={handleUpdateProject}
+      />
+
+      {/* 删除确认弹窗 */}
+      <DeleteProjectModal
+        open={deleteModal.open}
+        projectName={deleteModal.project?.name || ''}
+        onClose={() => setDeleteModal({ open: false, project: null })}
+        onConfirm={handleDeleteProject}
+        loading={deleteLoading}
       />
     </>
   );
@@ -184,6 +267,90 @@ function SidebarItem({
       )}
     >
       {children}
+    </div>
+  );
+}
+
+function ProjectItem({
+  project,
+  active,
+  count,
+  onClick,
+  onEdit,
+  onDelete,
+}: {
+  project: ProjectResponse;
+  active?: boolean;
+  count: number;
+  onClick: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const [popoverOpen, setPopoverOpen] = useState(false);
+
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        "group flex w-full gap-2 items-center rounded px-3 py-3 text-sm transition cursor-pointer",
+        active ? "bg-surface-variant text-on-primary" : "text-[#444746] hover:bg-surface-variant"
+      )}
+    >
+      {/* Left: Logs icon and project name */}
+      <Logs className="h-4 w-4 flex-shrink-0" />
+      <span className="flex-1 truncate">{project.name}</span>
+      
+      {/* Right: color indicator and count */}
+      <span 
+        className="h-2.5 w-2.5 rounded-full flex-shrink-0" 
+        style={{ background: project.color }} 
+      />
+      <Badge variant="muted" className="flex-shrink-0">{count}</Badge>
+      
+      {/* More options button - visible on hover */}
+      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0",
+              popoverOpen && "opacity-100"
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent 
+          className="w-32 p-1" 
+          align="end"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-surface-variant transition-colors"
+            onClick={() => {
+              setPopoverOpen(false);
+              onEdit();
+            }}
+          >
+            <Pencil className="h-4 w-4" />
+            <span>编辑</span>
+          </button>
+          <button
+            className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+            onClick={() => {
+              setPopoverOpen(false);
+              onDelete();
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+            <span>删除</span>
+          </button>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }

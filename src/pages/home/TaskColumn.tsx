@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Filter, PanelLeftClose, PanelRightClose } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ type Props = {
   projectLookup: Map<string, string>;
   onSelectTask: (id: string | null) => void;
   selectedTaskId: string | null;
+  selectedProjectId: string | null;
   newTitle: string;
   newStartDate?: number;
   onChangeTitle: (v: string) => void;
@@ -46,6 +47,7 @@ export default function TaskColumn({
   projectLookup,
   onSelectTask,
   selectedTaskId,
+  selectedProjectId,
   newTitle,
   newStartDate,
   onChangeTitle,
@@ -67,6 +69,30 @@ export default function TaskColumn({
   const showDatePicker = inputFocused || !isInputEmpty;
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // SmartList 到分组名称的映射
+  const smartListToGroup: Record<string, string> = {
+    today: "今天",
+    tomorrow: "明天",
+    week: "最近7天"
+  };
+
+  // 根据 selectedProjectId 过滤要显示的分组
+  const filteredGroups = useMemo(() => {
+    // 时间类 SmartList：只显示对应的分组
+    if (selectedProjectId && smartListToGroup[selectedProjectId]) {
+      const targetGroup = smartListToGroup[selectedProjectId];
+      return groups.filter((g) => g.group === targetGroup);
+    }
+    
+    // "所有"视图：过滤掉任务数为0的分组
+    if (selectedProjectId === "all" || !selectedProjectId) {
+      return groups.filter((g) => g.tasks.length > 0);
+    }
+    
+    // 其他情况（inbox、具体项目）：显示所有分组，但过滤掉空分组
+    return groups.filter((g) => g.tasks.length > 0);
+  }, [groups, selectedProjectId]);
+
   const handleConfirmDelete = async () => {
     if (!pendingDeleteId) return;
     await onDeleteTask(pendingDeleteId);
@@ -77,13 +103,13 @@ export default function TaskColumn({
     setOpenGroups((prev) => {
       // 获取所有有任务的分组
       const groupsWithTasks = new Set(
-        groups.filter((group) => group.tasks.length > 0).map((group) => group.group)
+        filteredGroups.filter((group) => group.tasks.length > 0).map((group) => group.group)
       );
       // 保留之前已展开且仍然存在的分组，同时添加新的有任务的分组
       const merged = new Set([...prev.filter((g) => groupsWithTasks.has(g)), ...groupsWithTasks]);
       return Array.from(merged);
     });
-  }, [groups]);
+  }, [filteredGroups]);
 
   return (
     <Card className="flex h-full flex-col">
@@ -138,7 +164,7 @@ export default function TaskColumn({
         {isSyncing && <p className="text-xs text-outline">同步中...</p>}
         {lastError && <p className="text-xs text-red-500">同步失败: {lastError}</p>}
         <Accordion type="multiple" className="space-y-2" value={openGroups} onValueChange={setOpenGroups}>
-          {groups.map((group) => (
+          {filteredGroups.map((group) => (
             <AccordionItem key={group.group} value={group.group}>
               <AccordionTrigger>
                 <span className={group.accent}>{group.group}</span>
