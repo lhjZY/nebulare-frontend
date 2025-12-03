@@ -2,6 +2,14 @@ import { Table } from "dexie";
 
 export type SyncStatus = "synced" | "created" | "updated" | "deleted";
 
+// 子任务结构
+export interface SubTask {
+  id: string;
+  title: string;
+  completed: boolean;
+  sortOrder: number;
+}
+
 // 与后端 models.Task 对齐（字段名使用后端 JSON tag）
 export interface Task {
   id: string; // UUID v4
@@ -16,7 +24,7 @@ export interface Task {
   startDate?: number; // timestamp (ms)
   dueDate?: number; // timestamp (ms)
   tags: string[]; // 来自后端 JSONB 数组
-  items: unknown[]; // 后端 JSONB 子任务列表，前端可定义具体类型
+  items: SubTask[]; // 子任务列表
   isDeleted: boolean;
   modifiedTime: number; // 对应后端 SyncMeta.server_update_time (json:"modifiedTime")
   syncStatus: SyncStatus; // 前端专用同步标记

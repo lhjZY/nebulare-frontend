@@ -2,6 +2,12 @@
 module.exports = {
     darkMode: ["class"],
     content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
+    safelist: [
+      // 优先级颜色类
+      'border-gray-300', 'border-blue-500', 'border-yellow-500', 'border-red-500',
+      'text-gray-400', 'text-blue-500', 'text-yellow-500', 'text-red-500',
+      'bg-gray-400', 'bg-blue-500', 'bg-yellow-500', 'bg-red-500'
+    ],
   theme: {
   	extend: {
   		colors: {

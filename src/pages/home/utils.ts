@@ -75,3 +75,17 @@ export function isTomorrow(ts?: number) {
 export function isCompleted(status?: number) {
   return status !== undefined && status >= 2;
 }
+
+// 优先级配置
+export const PRIORITY_CONFIG = {
+  0: { label: "默认", color: "text-gray-400", borderColor: "border-gray-300", bgColor: "bg-gray-400" },
+  1: { label: "低", color: "text-blue-500", borderColor: "border-blue-500", bgColor: "bg-blue-500" },
+  2: { label: "中", color: "text-yellow-500", borderColor: "border-yellow-500", bgColor: "bg-yellow-500" },
+  3: { label: "高", color: "text-red-500", borderColor: "border-red-500", bgColor: "bg-red-500" }
+} as const;
+
+export type PriorityLevel = keyof typeof PRIORITY_CONFIG;
+
+export function getPriorityConfig(priority: number) {
+  return PRIORITY_CONFIG[(priority as PriorityLevel) ?? 0] || PRIORITY_CONFIG[0];
+}

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { syncOnce } from "@/services/sync";
+import { tokenStorage } from "@/utils/http/axios";
 
 type UseSyncOptions = {
   intervalMs?: number
@@ -15,6 +16,10 @@ export function useSync(options: UseSyncOptions = {}) {
   const initialized = useRef(false);
 
   const runSync = useCallback(async () => {
+    // 检查是否有 token，没有则跳过同步
+    if (!tokenStorage.getAccessToken()) {
+      return;
+    }
     if (isSyncing) return;
     setIsSyncing(true);
     setLastError(null);

@@ -1,10 +1,11 @@
 import React, { useState, useRef } from "react";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Flag, Trash2 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Task } from "@/db/schema";
 import { cn } from "@/lib/utils";
-import { formatDate, isOverdue, isCompleted } from "./utils";
+import { formatDate, isOverdue, isCompleted, getPriorityConfig, PRIORITY_CONFIG, PriorityLevel } from "./utils";
 
 type Props = {
   task: Task;
@@ -13,12 +14,15 @@ type Props = {
   onSelect: () => void;
   onDelete: () => void;
   onToggleComplete: (taskId: string, completed: boolean) => void;
+  onUpdatePriority: (taskId: string, priority: number) => void;
 };
 
-export default function TaskItem({ task, projectName, selected, onSelect, onDelete, onToggleComplete }: Props) {
+export default function TaskItem({ task, projectName, selected, onSelect, onDelete, onToggleComplete, onUpdatePriority }: Props) {
   const [isExiting, setIsExiting] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const checkboxRef = useRef<HTMLButtonElement>(null);
   const completed = isCompleted(task.status);
+  const priorityConfig = getPriorityConfig(task.priority);
 
   const triggerConfetti = () => {
     if (!checkboxRef.current) return;
@@ -73,6 +77,7 @@ export default function TaskItem({ task, projectName, selected, onSelect, onDele
         checked={completed}
         onCheckedChange={handleCheckChange}
         onClick={(e) => e.stopPropagation()}
+        className={priorityConfig.borderColor}
       />
       <div className="flex-1 min-w-0">
         <div className={cn("text-sm truncate", completed && "line-through text-outline")}>{task.title}</div>
@@ -89,17 +94,56 @@ export default function TaskItem({ task, projectName, selected, onSelect, onDele
             {formatDate(task.dueDate)}
           </span>
         )}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete();
-          }}
-          className="rounded-full p-1 text-outline hover:bg-surface-variant opacity-0 group-hover:opacity-100 transition-opacity"
-          aria-label="删除任务"
-        >
-          <MoreHorizontal className="h-4 w-4" />
-        </button>
+        <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              className="rounded-full p-1 text-outline hover:bg-surface-variant opacity-0 group-hover:opacity-100 transition-opacity"
+              aria-label="更多操作"
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-2" align="end" onClick={(e) => e.stopPropagation()}>
+            <div className="text-xs text-outline mb-2 px-1">优先级</div>
+            <div className="flex items-center gap-2 mb-2">
+              {([3, 2, 1, 0] as PriorityLevel[]).map((level) => {
+                const config = PRIORITY_CONFIG[level];
+                return (
+                  <button
+                    key={level}
+                    onClick={() => {
+                      onUpdatePriority(task.id, level);
+                      setMenuOpen(false);
+                    }}
+                    className={cn(
+                      "p-2 rounded hover:bg-surface-variant transition-colors",
+                      task.priority === level && "bg-surface-variant"
+                    )}
+                    title={config.label}
+                  >
+                    <Flag className={cn("h-5 w-5", config.color)} />
+                  </button>
+                );
+              })}
+            </div>
+            <div className="border-t pt-1">
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  onDelete();
+                }}
+                className="w-full flex items-center gap-2 px-2 py-2 text-sm text-red-500 hover:bg-surface-variant rounded transition-colors"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span>删除</span>
+              </button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );

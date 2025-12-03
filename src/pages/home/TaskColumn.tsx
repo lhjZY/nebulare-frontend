@@ -36,6 +36,7 @@ type Props = {
   lastError: string | null;
   onDeleteTask: (id: string) => void;
   onToggleComplete: (taskId: string, completed: boolean) => void;
+  onUpdatePriority: (taskId: string, priority: number) => void;
   columnTitle: string;
   inputPlaceholder: string;
   sidebarCollapsed: boolean;
@@ -57,6 +58,7 @@ export default function TaskColumn({
   lastError,
   onDeleteTask,
   onToggleComplete,
+  onUpdatePriority,
   columnTitle,
   inputPlaceholder,
   sidebarCollapsed,
@@ -156,7 +158,7 @@ export default function TaskColumn({
             <DatePicker
               value={newStartDate}
               onChange={onChangeStartDate}
-              triggerClassName="pointer-events-auto w-[150px]"
+              triggerClassName="pointer-events-auto w-[150px] hover:bg-transparent focus:bg-transparent active:bg-transparent"
               onConfirm={() => inputRef.current?.focus()}
             />
           </div>
@@ -181,6 +183,7 @@ export default function TaskColumn({
                       onSelect={() => onSelectTask(task.id)}
                       onDelete={() => setPendingDeleteId(task.id)}
                       onToggleComplete={onToggleComplete}
+                      onUpdatePriority={onUpdatePriority}
                     />
                   ))}
                 </div>

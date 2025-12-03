@@ -139,6 +139,24 @@ export default function HomePage() {
     syncNow();
   };
 
+  const handleUpdateTask = async (taskId: string, updates: Partial<import("@/db/schema").Task>) => {
+    await db.tasks.update(taskId, {
+      ...updates,
+      syncStatus: "updated",
+      modifiedTime: Date.now()
+    });
+    syncNow();
+  };
+
+  const handleUpdatePriority = async (taskId: string, priority: number) => {
+    await db.tasks.update(taskId, {
+      priority,
+      syncStatus: "updated",
+      modifiedTime: Date.now()
+    });
+    syncNow();
+  };
+
   // 项目创建后的处理函数
   const handleProjectCreated = () => {
     // 触发同步，从服务器获取最新的项目列表
@@ -188,16 +206,26 @@ export default function HomePage() {
             syncNow();
           }}
           onToggleComplete={handleToggleComplete}
+          onUpdatePriority={handleUpdatePriority}
           columnTitle={columnTitle}
           inputPlaceholder={inputPlaceholder}
           sidebarCollapsed={sidebarCollapsed}
           onToggleSidebar={handleToggleSidebar}
         />
       </Panel>
-      <ResizeHandle />
-      <Panel defaultSize={20} minSize={18} maxSize={35}>
-        <TaskDetail task={detailTask} projectLookup={projectLookup} />
-      </Panel>
+      {detailTask && (
+        <>
+          <ResizeHandle />
+          <Panel defaultSize={20} minSize={18} maxSize={35}>
+            <TaskDetail 
+              task={detailTask} 
+              projectLookup={projectLookup}
+              onToggleComplete={handleToggleComplete}
+              onUpdateTask={handleUpdateTask}
+            />
+          </Panel>
+        </>
+      )}
     </PanelGroup>
   );
 }

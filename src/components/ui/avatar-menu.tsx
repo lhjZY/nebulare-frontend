@@ -9,6 +9,21 @@ type AvatarMenuProps = {
 export default function AvatarMenu({ onOpenThemeDialog }: AvatarMenuProps) {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  // 点击外部区域关闭弹窗
+  React.useEffect(() => {
+    if (!open) return;
+    
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
 
   const handleLogout = () => {
     logout();
@@ -17,7 +32,7 @@ export default function AvatarMenu({ onOpenThemeDialog }: AvatarMenuProps) {
   };
 
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
         className="h-10 w-10 rounded-full bg-primary text-on-primary grid place-items-center text-lg hover:opacity-90"
