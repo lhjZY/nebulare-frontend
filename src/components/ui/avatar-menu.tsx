@@ -2,6 +2,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@/api/auth";
 import {Palette,LogOut } from 'lucide-react'
+import { Avatar, AvatarImage, AvatarFallback } from "./avatar";
+import defaultImage from '@/assets/avatar.jpeg'
 type AvatarMenuProps = {
   onOpenThemeDialog?: () => void;
 };
@@ -33,13 +35,11 @@ export default function AvatarMenu({ onOpenThemeDialog }: AvatarMenuProps) {
 
   return (
     <div ref={containerRef} className="relative">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="h-10 w-10 rounded-full bg-primary text-on-primary grid place-items-center text-lg hover:opacity-90"
-        aria-label="打开用户菜单"
-      >
-        T
-      </button>
+      <Avatar onClick={() => setOpen((v) => !v)}
+        className="h-10 w-10 rounded-full grid place-items-center text-lg hover:opacity-90">
+        <AvatarImage src={defaultImage} />
+        <AvatarFallback>N</AvatarFallback>
+      </Avatar>
       {open ? (
         <div className="absolute left-12 top-0 z-50 w-40 rounded-xl border border-outline/20 bg-white shadow-md">
           <button

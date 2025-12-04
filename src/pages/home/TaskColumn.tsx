@@ -115,27 +115,28 @@ const TaskColumn = React.memo(function TaskColumn({
 
   return (
     <Card className="flex h-full flex-col">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="rounded-lg transition-transform duration-200"
-            onClick={onToggleSidebar}
-          >
-            {sidebarCollapsed ? (
-              <PanelRightClose className="h-4 w-4" />
-            ) : (
-              <PanelLeftClose className="h-4 w-4" />
-            )}
+      <CardHeader className="flex flex-col">
+        <div className="flex flex-row items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost" 
+              size="sm" 
+              className="rounded-lg transition-transform duration-200"
+              onClick={onToggleSidebar}
+            >
+              {sidebarCollapsed ? (
+                <PanelRightClose className="h-4 w-4" />
+              ) : (
+                <PanelLeftClose className="h-4 w-4" />
+              )}
+              
+            </Button>
+            <div className="text-xl font-semibold">{columnTitle}</div>
+          </div>
+          <Button variant="ghost" size="sm" className="rounded-lg">
+            <Filter className="h-4 w-4" />
           </Button>
-          <CardTitle className="text-xl font-semibold">{columnTitle}</CardTitle>
         </div>
-        <Button variant="ghost" size="sm" className="rounded-lg">
-          <Filter className="h-4 w-4" />
-        </Button>
-      </CardHeader>
-      <CardContent className="flex-1 overflow-auto space-y-4">
         <form onSubmit={onSubmit} className="group relative flex items-center gap-2">
           <Input
             placeholder={inputPlaceholder}
@@ -163,6 +164,9 @@ const TaskColumn = React.memo(function TaskColumn({
             />
           </div>
         </form>
+      </CardHeader>
+      <CardContent className="flex-1 overflow-auto space-y-4">
+        
         {isSyncing && <p className="text-xs text-outline">同步中...</p>}
         {lastError && <p className="text-xs text-red-500">同步失败: {lastError}</p>}
         <Accordion type="multiple" className="space-y-2" value={openGroups} onValueChange={setOpenGroups}>

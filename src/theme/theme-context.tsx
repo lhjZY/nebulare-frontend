@@ -26,6 +26,9 @@ export function applyTheme(preset: ThemePreset) {
   style.setProperty("--theme-primary", preset.color);
   style.setProperty("--theme-aside-bg", preset.asideBg ?? preset.color);
   style.setProperty("--theme-input-border", preset.inputBorder ?? preset.color);
+  style.setProperty("--theme-sidebar-bg", preset.sidebarBg ?? preset.color)
+  style.setProperty("--theme-sidebar-item-active", preset.sidebarItemActive ?? preset.color);
+  
 }
 
 type ThemeProviderProps = { children: React.ReactNode };

@@ -18,36 +18,30 @@ export const themePresets: ThemePreset[] = [
     inputBorder: "#E5E7EB", 
     asideBg: "#ffffff",
     sidebarBg: "#ffffff",
-    sidebarItem: "#F7F7F7",
     sidebarItemActive: "#EFEFEF"
   },
   { 
     id: "qinglan", 
     name: "晴蓝", 
     color: "#5D7CFF",
-    sidebarBg: "#5D7CFF",
-    sidebarItem: "#8798FF",
-    sidebarItemActive: "#A9B5FF"
+    sidebarBg: "oklch(95.1% 0.026 236.824)",
+    sidebarItemActive: "oklch(90.1% 0.058 230.902)"
   },
   { 
     id: "songshi", 
     name: "松石", 
-    color: "#1FC8A9",
-    sidebarBg: "#1FC8A9",
-    sidebarItem: "#47D3BA",
-    sidebarItemActive: "#70DFCB"
-  },
-  { 
-    id: "miqing", 
-    name: "秘青", 
-    color: "#45B3C5",
-    sidebarBg: "#45B3C5",
-    sidebarItem: "#69C8D6",
-    sidebarItemActive: "#8DDDE7"
+    color: "oklch(84.5% 0.143 164.978)", // 300
+    sidebarBg: "oklch(96.2% 0.044 156.743)", // 100
+    sidebarItemActive: "oklch(92.5% 0.084 155.995)" // 200
   },
   { id: "yanlv", name: "燕绿", color: "#A5BDA2" },
   { id: "xinghuang", name: "杏黄", color: "#F7B84B" },
-  { id: "taotian", name: "桃妖", color: "#FF8FA3" },
+  { id: "taotian", 
+    name: "桃妖", 
+    color: "oklch(82.3% 0.12 346.018)",
+    sidebarBg: "oklch(89.9% 0.061 343.231)",
+    sidebarItemActive: "oklch(94.8% 0.028 342.258)"
+   },
   { id: "moshanz", name: "暮山紫", color: "#9BA6E6" },
   { id: "chenxiang", name: "沉香", color: "#B49278" },
   { id: "canglan", name: "藏蓝", color: "#2E3D70" },

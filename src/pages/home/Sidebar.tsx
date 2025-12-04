@@ -137,13 +137,13 @@ export default function Sidebar({
 
   return (
     <>
-      <Card className="flex h-full flex-col bg-white pt-5">
+      <Card className="flex h-full flex-col bg-[var(--theme-sidebar-bg)] pt-5">
         <CardContent className="flex-1 overflow-auto pt-0 space-y-4">
           <Section>
             {smartLists.map((item) => (
               <SidebarItem 
                 key={item.key} 
-                active={selectedProjectId === item.key} 
+                active={selectedProjectId === item.key || (selectedProjectId === null && item.key === "all")}
                 onClick={() => onSelectProject(item.key)}
               >
                 <item.icon className="h-4 w-4" />
@@ -263,7 +263,7 @@ function SidebarItem({
       onClick={onClick}
       className={cn(
         "flex w-full gap-2 items-center rounded px-3 py-3 text-sm transition",
-        active ? "bg-surface-variant text-on-primary" : "text-[#444746] hover:bg-surface-variant"
+        active ? "bg-[var(--theme-sidebar-item-active)] text-on-primary" : "text-[#444746] hover:bg-surface-variant"
       )}
     >
       {children}

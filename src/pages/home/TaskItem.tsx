@@ -56,15 +56,20 @@ const TaskItem = React.memo(function TaskItem({ task, projectName, projectColor,
     }
   };
 
+  // 有项目颜色时显示项目颜色边框（无论是否完成）
+  const showProjectBorder = !!projectColor;
+
   return (
     <div
       className={cn(
-        "group flex w-full items-center gap-3 px-3 py-1 text-left hover:bg-surface-variant cursor-pointer transition-all duration-300",
-        projectColor ? "rounded-r border-l-4" : "rounded",
+        "group flex w-full items-center gap-3 py-1 text-left hover:bg-surface-variant cursor-pointer transition-all duration-300",
+        // 所有 item 统一使用 border-l-4，保持 checkbox 对齐；左边距增大
+        "pl-3 pr-2 border-l-4",
+        showProjectBorder ? "rounded-r" : "border-l-transparent rounded",
         selected && "bg-surface-variant",
         isExiting && "opacity-0 scale-95 translate-y-4"
       )}
-      style={projectColor ? { borderLeftColor: projectColor } : undefined}
+      style={showProjectBorder ? { borderLeftColor: projectColor } : undefined}
       role="button"
       tabIndex={0}
       onClick={onSelect}
@@ -80,7 +85,7 @@ const TaskItem = React.memo(function TaskItem({ task, projectName, projectColor,
         checked={completed}
         onCheckedChange={handleCheckChange}
         onClick={(e) => e.stopPropagation()}
-        className={priorityConfig.borderColor}
+        className={!completed ? priorityConfig.borderColor : undefined}
       />
       <div className="flex-1 min-w-0">
         <div className={cn("text-sm truncate", completed && "line-through text-outline")}>{task.title}</div>
@@ -91,8 +96,12 @@ const TaskItem = React.memo(function TaskItem({ task, projectName, projectColor,
       <div className="flex items-center gap-2 flex-shrink-0">
         {task.startDate && (
           <span className={cn(
-            "text-xs text-outline",
-            isOverdue(task.startDate, task.timeZone) && "text-red-500"
+            "text-xs",
+            completed 
+              ? "text-outline"  // 已完成：灰色
+              : isOverdue(task.startDate, task.timeZone) 
+                ? "text-red-500"  // 未完成+过期：红色
+                : "text-blue-500"  // 未完成+未过期：蓝色
           )}>
             {formatDate(task.startDate, task.timeZone)}
           </span>
