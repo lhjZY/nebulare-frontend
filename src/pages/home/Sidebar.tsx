@@ -48,9 +48,9 @@ export default function Sidebar({
 
   const smartLists = [
     { key: "all", label: "所有", icon: ListChecks, count: tasks.length },
-    { key: "today", label: "今天", icon: Sun, count: tasks.filter((t) => isToday(t.startDate)).length },
-    { key: "tomorrow", label: "明天", icon: CalendarDays, count: tasks.filter((t) => isTomorrow(t.startDate)).length },
-    { key: "week", label: "最近7天", icon: Archive, count: tasks.filter((t) => isWeek(t.startDate)).length },
+    { key: "today", label: "今天", icon: Sun, count: tasks.filter((t) => isToday(t.startDate, t.timeZone)).length },
+    { key: "tomorrow", label: "明天", icon: CalendarDays, count: tasks.filter((t) => isTomorrow(t.startDate, t.timeZone)).length },
+    { key: "week", label: "最近7天", icon: Archive, count: tasks.filter((t) => isWeek(t.startDate, t.timeZone)).length },
     { key: "inbox", label: "收集箱", icon: Inbox, count: tasks.filter((t) => t.projectId === "inbox").length },
   ];
 
@@ -154,9 +154,9 @@ export default function Sidebar({
           </Section>
 
           <div className="space-y-1">
-            <button
+            <div
               onClick={() => setProjectsExpanded(!projectsExpanded)}
-              className="w-full flex items-center justify-between text-xs font-medium uppercase text-outline hover:text-on-surface transition-colors"
+              className="w-full flex items-center justify-between text-xs font-medium uppercase text-outline hover:text-on-surface transition-colors cursor-pointer select-none"
             >
               <div className={cn("flex items-center gap-1")}>
                 <ChevronDown 
@@ -182,7 +182,7 @@ export default function Sidebar({
                 </Button>
                 
               </div>
-            </button>
+            </div>
             {projectsExpanded && (
               <div className="space-y-1 pt-1">
                 {projects.map((p: any) => {

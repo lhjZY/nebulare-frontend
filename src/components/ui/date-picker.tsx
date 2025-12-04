@@ -1,9 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { format, isThisWeek, isToday, isTomorrow } from "date-fns"
-import { zhCN } from "date-fns/locale"
 import { Calendar as CalendarIcon } from "lucide-react"
+import { zhCN } from "date-fns/locale"
+import { getDateLabel } from "@/lib/dayjs"
+import dayjs from "@/lib/dayjs"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
@@ -35,10 +36,7 @@ export function DatePicker({ value, onChange, triggerClassName, onConfirm }: Dat
   const selectedDate = draftDate ?? (value ? new Date(value) : undefined)
 
   const renderDateLabel = (date: Date) => {
-    if (isToday(date)) return "今天"
-    if (isTomorrow(date)) return "明天"
-    if (isThisWeek(date, { locale: zhCN })) return format(date, "EEE", { locale: zhCN })
-    return format(date, "M月d日", { locale: zhCN })
+    return getDateLabel(date.getTime())
   }
 
   const handleConfirm = () => {
@@ -79,7 +77,7 @@ export function DatePicker({ value, onChange, triggerClassName, onConfirm }: Dat
           selected={selectedDate}
           onSelect={(date) => setDraftDate(date ?? undefined)}
           formatters={{
-            formatMonthDropdown: (date) => format(date, "MMM", { locale: zhCN }),
+            formatMonthDropdown: (date) => dayjs(date).format("MMM"),
           }}
         />
         <div className="flex items-center gap-2 border-t p-3">

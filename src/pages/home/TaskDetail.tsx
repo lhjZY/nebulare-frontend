@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   task: Task | null;
-  projectLookup: Map<string, string>;
+  projectLookup: Map<string, { name: string; color: string }>;
   onToggleComplete: (taskId: string, completed: boolean) => void;
   onUpdateTask: (taskId: string, updates: Partial<Task>) => void;
 };

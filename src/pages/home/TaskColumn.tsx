@@ -23,7 +23,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { cn } from "@/lib/utils";
 type Props = {
   groups: TaskGroup[];
-  projectLookup: Map<string, string>;
+  projectLookup: Map<string, { name: string; color: string }>;
   onSelectTask: (id: string | null) => void;
   selectedTaskId: string | null;
   selectedProjectId: string | null;
@@ -43,7 +43,7 @@ type Props = {
   onToggleSidebar: () => void;
 };
 
-export default function TaskColumn({
+const TaskColumn = React.memo(function TaskColumn({
   groups,
   projectLookup,
   onSelectTask,
@@ -178,7 +178,8 @@ export default function TaskColumn({
                     <TaskItem
                       key={task.id}
                       task={task as Task}
-                      projectName={projectLookup.get(task.projectId) || "收集箱"}
+                      projectName={projectLookup.get(task.projectId)?.name || "收集箱"}
+                      projectColor={projectLookup.get(task.projectId)?.color}
                       selected={selectedTaskId === task.id}
                       onSelect={() => onSelectTask(task.id)}
                       onDelete={() => setPendingDeleteId(task.id)}
@@ -207,4 +208,56 @@ export default function TaskColumn({
       </CardContent>
     </Card>
   );
-}
+}, (prevProps, nextProps) => {
+  // 自定义比较函数：深度比较 groups 的实际内容
+  const groupsEqual = (
+    prevProps.groups.length === nextProps.groups.length &&
+    prevProps.groups.every((g, i) => {
+      const ng = nextProps.groups[i];
+      return (
+        g.group === ng.group &&
+        g.accent === ng.accent &&
+        g.tasks.length === ng.tasks.length &&
+        g.tasks.every((t, j) => {
+          const nt = ng.tasks[j];
+          return (
+            t.id === nt.id &&
+            t.title === nt.title &&
+            t.status === nt.status &&
+            t.priority === nt.priority &&
+            t.startDate === nt.startDate &&
+            t.modifiedTime === nt.modifiedTime
+          );
+        })
+      );
+    })
+  );
+
+  // 比较 projectLookup Map
+  const projectLookupEqual = (() => {
+    if (prevProps.projectLookup.size !== nextProps.projectLookup.size) return false;
+    for (const [key, value] of prevProps.projectLookup) {
+      const nextValue = nextProps.projectLookup.get(key);
+      if (!nextValue || value.name !== nextValue.name || value.color !== nextValue.color) {
+        return false;
+      }
+    }
+    return true;
+  })();
+
+  return (
+    groupsEqual &&
+    projectLookupEqual &&
+    prevProps.selectedTaskId === nextProps.selectedTaskId &&
+    prevProps.selectedProjectId === nextProps.selectedProjectId &&
+    prevProps.newTitle === nextProps.newTitle &&
+    prevProps.newStartDate === nextProps.newStartDate &&
+    prevProps.isSyncing === nextProps.isSyncing &&
+    prevProps.lastError === nextProps.lastError &&
+    prevProps.columnTitle === nextProps.columnTitle &&
+    prevProps.inputPlaceholder === nextProps.inputPlaceholder &&
+    prevProps.sidebarCollapsed === nextProps.sidebarCollapsed
+  );
+});
+
+export default TaskColumn;

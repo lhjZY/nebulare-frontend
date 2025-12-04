@@ -24,6 +24,13 @@ export type AuthRequestConfig = AxiosRequestConfig & {
 
 const TOKEN_KEY = "tickclone.tokens";
 
+// 认证失败回调，用于跳转登录页
+let onAuthFailure: (() => void) | null = null;
+
+export function setAuthFailureHandler(handler: () => void) {
+  onAuthFailure = handler;
+}
+
 export const tokenStorage = {
   get(): Tokens | null {
     try {
@@ -117,6 +124,8 @@ api.interceptors.response.use(
       config._retry = true;
       const newAccess = await refreshAccessToken();
       if (!newAccess) {
+        // Token 刷新失败，触发跳转登录
+        onAuthFailure?.();
         return Promise.reject(error);
       }
       config.headers = {

@@ -1,9 +1,8 @@
-import dayjs from "dayjs";
+import dayjs, { nowInTimezone, parseInTimezone, getBrowserTimezone } from "@/lib/dayjs";
 import { Task } from "@/db/schema";
 import { TaskGroup } from "./types";
 
 export function groupTasks(tasks: Task[]): TaskGroup[] {
-  const now = dayjs();
   const overdue: Task[] = [];
   const today: Task[] = [];
   const tomorrow: Task[] = [];
@@ -21,14 +20,21 @@ export function groupTasks(tasks: Task[]): TaskGroup[] {
       nodate.push(t);
       continue;
     }
-    const due = dayjs(t.startDate);
+
+    // 使用任务的时区，如果没有则使用浏览器时区
+    const tz = t.timeZone || getBrowserTimezone();
+    const now = nowInTimezone(tz);
+    const tomorrowDate = now.add(1, "day");
+    const weekEnd = now.add(6, "day");
+    const due = parseInTimezone(t.startDate, tz);
+
     if (due.isBefore(now, "day")) {
       overdue.push(t);
     } else if (due.isSame(now, "day")) {
       today.push(t);
-    } else if (due.diff(now, "day") === 1) {
+    } else if (due.isSame(tomorrowDate, "day")) {
       tomorrow.push(t);
-    } else if (due.diff(now, "day") <= 6) {
+    } else if (due.isBefore(weekEnd, "day") || due.isSame(weekEnd, "day")) {
       week.push(t);
     } else {
       nodate.push(t);
@@ -45,31 +51,37 @@ export function groupTasks(tasks: Task[]): TaskGroup[] {
   ];
 }
 
-export function formatDate(ts?: number) {
+export function formatDate(ts?: number, tz?: string) {
   if (!ts) return "无日期";
-  const d = dayjs(ts);
-  return d.format("MM月DD日");
+  return parseInTimezone(ts, tz).format("MM月DD日");
 }
 
-export function isOverdue(ts?: number) {
+export function isOverdue(ts?: number, tz?: string) {
   if (!ts) return false;
-  return dayjs(ts).isBefore(dayjs(), "day");
+  const now = nowInTimezone(tz);
+  return parseInTimezone(ts, tz).isBefore(now, "day");
 }
 
-export function isToday(ts?: number) {
+export function isToday(ts?: number, tz?: string) {
   if (!ts) return false;
-  return dayjs(ts).isSame(dayjs(), "day");
+  const now = nowInTimezone(tz);
+  return parseInTimezone(ts, tz).isSame(now, "day");
 }
 
-export function isWeek(ts?: number) {
+export function isWeek(ts?: number, tz?: string) {
   if (!ts) return false;
-  const diff = dayjs(ts).diff(dayjs(), "day");
-  return diff >= 0 && diff <= 6;
+  const now = nowInTimezone(tz);
+  const target = parseInTimezone(ts, tz);
+  const weekEnd = now.add(6, "day");
+  // 在今天或之后，并且在7天内（包含第7天）
+  return (target.isSame(now, "day") || target.isAfter(now, "day")) && 
+         (target.isBefore(weekEnd, "day") || target.isSame(weekEnd, "day"));
 }
 
-export function isTomorrow(ts?: number) {
+export function isTomorrow(ts?: number, tz?: string) {
   if (!ts) return false;
-  return dayjs(ts).diff(dayjs(), "day") === 1;
+  const now = nowInTimezone(tz);
+  return parseInTimezone(ts, tz).isSame(now.add(1, "day"), "day");
 }
 
 export function isCompleted(status?: number) {

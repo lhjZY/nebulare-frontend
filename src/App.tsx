@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import AuthPage from "./pages/LoginPage";
 import { ThemePaletteDialog } from "@/components/theme/ThemePaletteDialog";
 import Sidebar from '@/components/layout/Sidebar'
+import AuthGuard from '@/components/auth/AuthGuard'
 function App() {
   const location = useLocation();
   const [themeDialogOpen, setThemeDialogOpen] = React.useState(false);
@@ -11,24 +12,26 @@ function App() {
     location.pathname === "/login" || location.pathname === "/register";
 
   return (
-    <div className="min-h-screen bg-surface text-on-surface">
-      <div className="flex h-screen">
-        {!hideSidebar && (
-          <Sidebar setThemeDialogOpen={setThemeDialogOpen} />
-        )}
+    <AuthGuard>
+      <div className="min-h-screen bg-surface text-on-surface">
+        <div className="flex h-screen">
+          {!hideSidebar && (
+            <Sidebar setThemeDialogOpen={setThemeDialogOpen} />
+          )}
 
-        <main className="flex-1">
-          <div className="h-full bg-white shadow-sm">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<AuthPage />} />
-              <Route path="/register" element={<AuthPage />} />
-            </Routes>
-          </div>
-        </main>
+          <main className="flex-1">
+            <div className="h-full bg-white shadow-sm">
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/login" element={<AuthPage />} />
+                <Route path="/register" element={<AuthPage />} />
+              </Routes>
+            </div>
+          </main>
+        </div>
+        <ThemePaletteDialog open={themeDialogOpen} onOpenChange={setThemeDialogOpen} />
       </div>
-      <ThemePaletteDialog open={themeDialogOpen} onOpenChange={setThemeDialogOpen} />
-    </div>
+    </AuthGuard>
   );
 }
 

@@ -77,9 +77,12 @@ export default function HomePage() {
   }, [allTasks, selectedProjectId, isTimeBasedSmartList]);
 
   const projectLookup = useMemo(() => {
-    const map = new Map<string, string>();
+    const map = new Map<string, { name: string; color: string }>();
     for (const p of projects ?? []) {
-      map.set((p as any).ID ?? (p as any).id ?? p.id, (p as any).Name ?? p.name);
+      const id = (p as any).ID ?? (p as any).id ?? p.id;
+      const name = (p as any).Name ?? p.name;
+      const color = (p as any).Color ?? p.color ?? "#c2e7ff";
+      map.set(id, { name, color });
     }
     return map;
   }, [projects]);
@@ -104,14 +107,14 @@ export default function HomePage() {
     if (!selectedProjectId || isSmartList) {
       return smartListLabels[selectedProjectId ?? "all"] ?? "所有";
     }
-    return projectLookup.get(selectedProjectId) ?? "未命名项目";
+    return projectLookup.get(selectedProjectId)?.name ?? "未命名项目";
   }, [selectedProjectId, projectLookup, isSmartList]);
 
   const inputPlaceholder = useMemo(() => {
     if (!selectedProjectId || isSmartList) {
       return "+ 添加任务到收集箱";
     }
-    const projectName = projectLookup.get(selectedProjectId) ?? "项目";
+    const projectName = projectLookup.get(selectedProjectId)?.name ?? "项目";
     return `+ 添加任务到「${projectName}」中`;
   }, [selectedProjectId, projectLookup, isSmartList]);
 
@@ -166,6 +169,8 @@ export default function HomePage() {
   return (
     <PanelGroup direction="horizontal" className="h-full">
       <Panel 
+        id="sidebar"
+        order={1}
         ref={sidebarPanelRef}
         defaultSize={20} 
         minSize={12} 
@@ -184,7 +189,7 @@ export default function HomePage() {
         />
       </Panel>
       <ResizeHandle />
-      <Panel defaultSize={60} minSize={40}>
+      <Panel id="main" order={2} defaultSize={60} minSize={40}>
         <TaskColumn
           groups={groupedTasks}
           projectLookup={projectLookup}
@@ -213,19 +218,19 @@ export default function HomePage() {
           onToggleSidebar={handleToggleSidebar}
         />
       </Panel>
-      {detailTask && (
-        <>
-          <ResizeHandle />
-          <Panel defaultSize={20} minSize={18} maxSize={35}>
-            <TaskDetail 
-              task={detailTask} 
-              projectLookup={projectLookup}
-              onToggleComplete={handleToggleComplete}
-              onUpdateTask={handleUpdateTask}
-            />
-          </Panel>
-        </>
-      )}
+      <ResizeHandle />
+      <Panel id="detail" order={3} defaultSize={20} minSize={18} maxSize={35}>
+        {detailTask ? (
+          <TaskDetail 
+            task={detailTask} 
+            projectLookup={projectLookup}
+            onToggleComplete={handleToggleComplete}
+            onUpdateTask={handleUpdateTask}
+          />
+        ) : (
+          <div className="h-full bg-background" />
+        )}
+      </Panel>
     </PanelGroup>
   );
 }

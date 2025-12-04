@@ -10,6 +10,7 @@ import { formatDate, isOverdue, isCompleted, getPriorityConfig, PRIORITY_CONFIG,
 type Props = {
   task: Task;
   projectName: string;
+  projectColor?: string;
   selected: boolean;
   onSelect: () => void;
   onDelete: () => void;
@@ -17,7 +18,7 @@ type Props = {
   onUpdatePriority: (taskId: string, priority: number) => void;
 };
 
-export default function TaskItem({ task, projectName, selected, onSelect, onDelete, onToggleComplete, onUpdatePriority }: Props) {
+const TaskItem = React.memo(function TaskItem({ task, projectName, projectColor, selected, onSelect, onDelete, onToggleComplete, onUpdatePriority }: Props) {
   const [isExiting, setIsExiting] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const checkboxRef = useRef<HTMLButtonElement>(null);
@@ -58,10 +59,12 @@ export default function TaskItem({ task, projectName, selected, onSelect, onDele
   return (
     <div
       className={cn(
-        "group flex w-full items-center gap-3 rounded px-3 py-1 text-left hover:bg-surface-variant cursor-pointer transition-all duration-300",
+        "group flex w-full items-center gap-3 px-3 py-1 text-left hover:bg-surface-variant cursor-pointer transition-all duration-300",
+        projectColor ? "rounded-r border-l-4" : "rounded",
         selected && "bg-surface-variant",
         isExiting && "opacity-0 scale-95 translate-y-4"
       )}
+      style={projectColor ? { borderLeftColor: projectColor } : undefined}
       role="button"
       tabIndex={0}
       onClick={onSelect}
@@ -86,12 +89,12 @@ export default function TaskItem({ task, projectName, selected, onSelect, onDele
         </div>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
-        {task.dueDate && (
+        {task.startDate && (
           <span className={cn(
             "text-xs text-outline",
-            isOverdue(task.dueDate) && "text-red-500"
+            isOverdue(task.startDate, task.timeZone) && "text-red-500"
           )}>
-            {formatDate(task.dueDate)}
+            {formatDate(task.startDate, task.timeZone)}
           </span>
         )}
         <Popover open={menuOpen} onOpenChange={setMenuOpen}>
@@ -147,4 +150,19 @@ export default function TaskItem({ task, projectName, selected, onSelect, onDele
       </div>
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // 自定义比较函数：只在关键属性变化时重渲染
+  return (
+    prevProps.task.id === nextProps.task.id &&
+    prevProps.task.title === nextProps.task.title &&
+    prevProps.task.status === nextProps.task.status &&
+    prevProps.task.priority === nextProps.task.priority &&
+    prevProps.task.startDate === nextProps.task.startDate &&
+    prevProps.task.modifiedTime === nextProps.task.modifiedTime &&
+    prevProps.projectName === nextProps.projectName &&
+    prevProps.projectColor === nextProps.projectColor &&
+    prevProps.selected === nextProps.selected
+  );
+});
+
+export default TaskItem;
