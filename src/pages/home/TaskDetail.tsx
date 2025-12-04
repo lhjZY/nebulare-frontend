@@ -84,7 +84,7 @@ export default function TaskDetail({
 
   const handleDateChange = (date: number | undefined) => {
     if (!task) return;
-    onUpdateTask(task.id, { dueDate: date });
+    onUpdateTask(task.id, { startDate: date });
   };
 
   const handlePriorityChange = (priority: PriorityLevel) => {
@@ -211,7 +211,7 @@ export default function TaskDetail({
             )}
           />
           <DatePicker
-            value={task?.dueDate}
+            value={task?.startDate}
             onChange={handleDateChange}
             triggerClassName="h-8"
           />
