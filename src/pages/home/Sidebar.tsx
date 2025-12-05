@@ -137,7 +137,7 @@ export default function Sidebar({
 
   return (
     <>
-      <Card className="flex h-full flex-col bg-[var(--theme-sidebar-bg)] pt-5">
+      <Card className="flex h-full flex-col bg-(--theme-sidebar-bg) pt-5">
         <CardContent className="flex-1 overflow-auto pt-0 space-y-4">
           <Section>
             {smartLists.map((item) => (
@@ -263,7 +263,7 @@ function SidebarItem({
       onClick={onClick}
       className={cn(
         "flex w-full gap-2 items-center rounded px-3 py-3 text-sm transition",
-        active ? "bg-[var(--theme-sidebar-item-active)] text-on-primary" : "text-[#444746] hover:bg-surface-variant"
+        active ? "bg-(--theme-sidebar-item-active) text-on-primary" : "text-[#444746] hover:bg-surface-variant"
       )}
     >
       {children}
@@ -297,15 +297,15 @@ function ProjectItem({
       )}
     >
       {/* Left: Logs icon and project name */}
-      <Logs className="h-4 w-4 flex-shrink-0" />
+      <Logs className="h-4 w-4 shrink-0" />
       <span className="flex-1 truncate">{project.name}</span>
       
       {/* Right: color indicator and count */}
       <span 
-        className="h-2.5 w-2.5 rounded-full flex-shrink-0" 
+        className="h-2.5 w-2.5 rounded-full shrink-0" 
         style={{ background: project.color }} 
       />
-      <Badge variant="muted" className="flex-shrink-0">{count}</Badge>
+      <Badge variant="muted" className="shrink-0">{count}</Badge>
       
       {/* More options button - visible on hover */}
       <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
@@ -314,7 +314,7 @@ function ProjectItem({
             variant="ghost"
             size="sm"
             className={cn(
-              "h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0",
+              "h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity shrink-0",
               popoverOpen && "opacity-100"
             )}
             onClick={(e) => {

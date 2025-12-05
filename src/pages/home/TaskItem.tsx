@@ -93,7 +93,7 @@ const TaskItem = React.memo(function TaskItem({ task, projectName, projectColor,
           {projectName}
         </div>
       </div>
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex items-center gap-2 shrink-0">
         {task.startDate && (
           <span className={cn(
             "text-xs",

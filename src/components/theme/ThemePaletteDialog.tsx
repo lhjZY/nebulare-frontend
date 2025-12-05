@@ -41,17 +41,17 @@ export function ThemePaletteDialog({ open, onOpenChange }: ThemePaletteDialogPro
                 role="radio"
                 aria-checked={active}
                 onClick={() => handleSelect(item.id)}
-                className="group flex flex-col items-center gap-2 focus:outline-none"
+                className="group flex flex-col items-center gap-2 focus:outline-hidden"
               >
                 <span
                   className={cn(
-                    "relative h-14 w-14 rounded-xl border border-outline/30 bg-white shadow-sm ring-offset-2 transition hover:shadow-md",
-                    active ? "ring-2 ring-[var(--theme-primary)]" : "ring-1 ring-transparent"
+                    "relative h-14 w-14 rounded-xl border border-outline/30 bg-white shadow-xs ring-offset-2 transition hover:shadow-md",
+                    active ? "ring-2 ring-(--theme-primary)" : "ring-1 ring-transparent"
                   )}
                   style={{ background: item.asideBg ?? item.color }}
                 >
                   {active ? (
-                    <span className="absolute -right-2 -bottom-2 grid h-6 w-6 place-items-center rounded-full bg-white text-[var(--theme-primary)] shadow ring-1 ring-outline/20">
+                    <span className="absolute -right-2 -bottom-2 grid h-6 w-6 place-items-center rounded-full bg-white text-(--theme-primary) shadow-sm ring-1 ring-outline/20">
                       <Check className="h-4 w-4" />
                     </span>
                   ) : null}

@@ -255,7 +255,7 @@ module.exports = {
         
 - **主面板**:
     
-    - `bg-white rounded-[28px] shadow-sm` (大圆角卡片)
+    - `bg-white rounded-[28px] shadow-xs` (大圆角卡片)
         
 - **FAB (新建按钮)**:
     

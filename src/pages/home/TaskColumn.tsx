@@ -146,7 +146,7 @@ const TaskColumn = React.memo(function TaskColumn({
             onBlur={() => setInputFocused(false)}
             ref={inputRef}
             className={cn(
-              "focus-visible:ring-offset-1 mt-1 w-full pr-[170px] transition-colors border-[var(--theme-input-border)] focus-visible:border-[var(--theme-input-border)] focus-visible:ring-[var(--theme-input-border)]",
+              "focus-visible:ring-offset-1 mt-1 w-full pr-[170px] transition-colors border-(--theme-input-border) focus-visible:border-(--theme-input-border) focus-visible:ring-(--theme-input-border)",
               !inputFocused && isInputEmpty ? "bg-gray-100" : "bg-white"
             )}
           />

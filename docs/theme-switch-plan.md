@@ -82,10 +82,10 @@ function applyTheme(preset: ThemePreset) {
 - 持久化：刷新后保持最近一次选择；清空存储后回退默认主题。
 
 ## TailwindCSS 优化建议
-- 变量引用：通过任意值语法直接引用 CSS 变量，例如 `className=\"bg-[var(--theme-aside-bg)]\"`、`className=\"border-[var(--theme-input-border)]\"`，确保主题切换无需条件样式。
-- 色板布局：色块按钮可用 `grid grid-cols-4 gap-3 md:grid-cols-6`，按钮使用 `h-12 w-12 rounded-xl shadow-sm hover:shadow`，选中态用 `ring-2 ring-offset-2 ring-[var(--theme-primary)]`.
+- 变量引用：通过任意值语法直接引用 CSS 变量，例如 `className=\"bg-(--theme-aside-bg)\"`、`className=\"border-(--theme-input-border)\"`，确保主题切换无需条件样式。
+- 色板布局：色块按钮可用 `grid grid-cols-4 gap-3 md:grid-cols-6`，按钮使用 `h-12 w-12 rounded-xl shadow-xs hover:shadow-sm`，选中态用 `ring-2 ring-offset-2 ring-(--theme-primary)`.
 - 弹窗骨架：复用现有 `Dialog`，内部容器 `p-5 space-y-4`，标题 `text-lg font-semibold`，底部按钮 `inline-flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-50`.
-- Input 边框：`className=\"border bg-white focus:ring-2 ring-offset-0 focus:ring-[var(--theme-input-border)]\"`，可避免自定义样式文件。
+- Input 边框：`className=\"border bg-white focus:ring-2 ring-offset-0 focus:ring-(--theme-input-border)\"`，可避免自定义样式文件。
 - 主题按钮：色块下方文字用 `text-xs text-gray-600`，整体组件控制在 `AvatarMenu` 中，减少额外 styled 组件层级。
 
 ## 第一性原则拆解与进一步优化

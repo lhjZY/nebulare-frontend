@@ -139,7 +139,7 @@ export function ProjectsPage() {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3 flex-1">
                   <div
-                    className="w-4 h-4 rounded-full flex-shrink-0"
+                    className="w-4 h-4 rounded-full shrink-0"
                     style={{ backgroundColor: project.color }}
                   />
                   <div className="flex-1 min-w-0">

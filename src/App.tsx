@@ -20,7 +20,7 @@ function App() {
           )}
 
           <main className="flex-1">
-            <div className="h-full bg-white shadow-sm">
+            <div className="h-full bg-white shadow-xs">
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<AuthPage />} />
