@@ -23,7 +23,6 @@ type Props = {
 
 export default function TaskDetail({
   task,
-  projectLookup,
   onToggleComplete,
   onUpdateTask
 }: Props) {
