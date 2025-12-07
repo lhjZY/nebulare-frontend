@@ -21,6 +21,7 @@
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-slot": "^1.2.4",
+    "@radix-ui/react-tabs": "^1.1.13",
     "@react-aria/i18n": "^3.12.13",
     "@tailwindcss/vite": "^4.1.17",
     "@types/canvas-confetti": "^1.9.0",
@@ -45,6 +46,12 @@
     "tailwindcss-react-aria-components": "^2.0.1",
     "uuid": "^13.0.0",
     "zustand": "^5.0.9"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "^19.2.7",
+      "@types/react-dom": "^19.2.3"
+    }
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.17",

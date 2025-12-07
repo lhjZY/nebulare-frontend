@@ -26,7 +26,7 @@ export function nowInTimezone(tz?: string): dayjs.Dayjs {
 }
 
 // 将时间戳解析为指定时区的时间
-export function parseInTimezone(ts: number, tz?: string): dayjs.Dayjs {
+export function parseInTimezone(ts: number | string, tz?: string): dayjs.Dayjs {
   const timezone = tz || getBrowserTimezone();
   return dayjs(ts).tz(timezone);
 }

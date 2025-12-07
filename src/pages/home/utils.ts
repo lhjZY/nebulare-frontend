@@ -51,24 +51,31 @@ export function groupTasks(tasks: Task[]): TaskGroup[] {
   ];
 }
 
-export function formatDate(ts?: number, tz?: string) {
+export function formatDate(ts?: number | string, tz?: string, isAllDay?: boolean) {
   if (!ts) return "无日期";
-  return parseInTimezone(ts, tz).format("MM月DD日");
+  const target = parseInTimezone(ts, tz);
+  const dateLabel = isToday(ts, tz)
+    ? "今天"
+    : isTomorrow(ts, tz)
+      ? "明天"
+      : target.format("MM月DD日");
+  const hasTime = !isAllDay && (target.hour() !== 0 || target.minute() !== 0 || target.second() !== 0);
+  return hasTime ? `${dateLabel} ${target.format("HH:mm")}` : dateLabel;
 }
 
-export function isOverdue(ts?: number, tz?: string) {
+export function isOverdue(ts?: number | string, tz?: string) {
   if (!ts) return false;
   const now = nowInTimezone(tz);
   return parseInTimezone(ts, tz).isBefore(now, "day");
 }
 
-export function isToday(ts?: number, tz?: string) {
+export function isToday(ts?: number | string, tz?: string) {
   if (!ts) return false;
   const now = nowInTimezone(tz);
   return parseInTimezone(ts, tz).isSame(now, "day");
 }
 
-export function isWeek(ts?: number, tz?: string) {
+export function isWeek(ts?: number | string, tz?: string) {
   if (!ts) return false;
   const now = nowInTimezone(tz);
   const target = parseInTimezone(ts, tz);
@@ -78,7 +85,7 @@ export function isWeek(ts?: number, tz?: string) {
          (target.isBefore(weekEnd, "day") || target.isSame(weekEnd, "day"));
 }
 
-export function isTomorrow(ts?: number, tz?: string) {
+export function isTomorrow(ts?: number | string, tz?: string) {
   if (!ts) return false;
   const now = nowInTimezone(tz);
   return parseInTimezone(ts, tz).isSame(now.add(1, "day"), "day");

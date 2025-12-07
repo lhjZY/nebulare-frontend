@@ -89,11 +89,9 @@ const TaskItem = React.memo(function TaskItem({ task, projectName, projectColor,
       />
       <div className="flex-1 min-w-0">
         <div className={cn("text-sm truncate", completed && "line-through text-outline")}>{task.title}</div>
-        <div className="text-xs text-outline truncate">
-          {projectName}
-        </div>
       </div>
       <div className="flex items-center gap-2 shrink-0">
+        <span className="text-xs text-outline truncate max-w-[80px]">{projectName}</span>
         {task.startDate && (
           <span className={cn(
             "text-xs",
@@ -103,7 +101,7 @@ const TaskItem = React.memo(function TaskItem({ task, projectName, projectColor,
                 ? "text-red-500"  // 未完成+过期：红色
                 : "text-blue-500"  // 未完成+未过期：蓝色
           )}>
-            {formatDate(task.startDate, task.timeZone)}
+            {formatDate(task.startDate, task.timeZone, task.isAllDay)}
           </span>
         )}
         <Popover open={menuOpen} onOpenChange={setMenuOpen}>

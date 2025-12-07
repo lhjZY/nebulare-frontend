@@ -17,6 +17,7 @@ export default function HomePage() {
   const { syncNow, isSyncing, lastError, lastRun } = useSync();
   const [newTitle, setNewTitle] = useState("");
   const [newStartDate, setNewStartDate] = useState<number | undefined>(undefined);
+  const [newDueDate, setNewDueDate] = useState<number | undefined>(undefined);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const sidebarPanelRef = useRef<ImperativePanelHandle>(null);
 
@@ -124,10 +125,11 @@ export default function HomePage() {
     if (!title) return;
     // 如果选中了 SmartList，则任务归入 inbox；否则归入具体项目
     const projectId = isSmartList ? "inbox" : (selectedProjectId ?? "inbox");
-    const task = createLocalTask({ id: uuid(), projectId, title, startDate: newStartDate });
+    const task = createLocalTask({ id: uuid(), projectId, title, startDate: newStartDate, dueDate: newDueDate });
     await db.tasks.put(task);
     setNewTitle("");
     setNewStartDate(undefined);
+    setNewDueDate(undefined);
     syncNow();
   };
 
@@ -200,6 +202,8 @@ export default function HomePage() {
           onChangeTitle={setNewTitle}
           newStartDate={newStartDate}
           onChangeStartDate={setNewStartDate}
+          newDueDate={newDueDate}
+          onChangeDueDate={setNewDueDate}
           onSubmit={handleAdd}
           isSyncing={syncState.isSyncing}
           lastError={syncState.lastError}

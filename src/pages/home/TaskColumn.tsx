@@ -19,7 +19,9 @@ import {
   AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import { useEffect, useRef, useState } from "react";
-import { DatePicker } from "@/components/ui/date-picker";
+import CalendarModal from "@/components/modals/CalendarModal";
+import { CalendarDays as CalendarIcon } from "lucide-react";
+import { getDateLabel } from "@/lib/dayjs";
 import { cn } from "@/lib/utils";
 type Props = {
   groups: TaskGroup[];
@@ -29,8 +31,10 @@ type Props = {
   selectedProjectId: string | null;
   newTitle: string;
   newStartDate?: number;
+  newDueDate?: number;
   onChangeTitle: (v: string) => void;
   onChangeStartDate: (v: number | undefined) => void;
+  onChangeDueDate: (v: number | undefined) => void;
   onSubmit: (e: React.FormEvent) => void;
   isSyncing: boolean;
   lastError: string | null;
@@ -51,8 +55,10 @@ const TaskColumn = React.memo(function TaskColumn({
   selectedProjectId,
   newTitle,
   newStartDate,
+  newDueDate,
   onChangeTitle,
   onChangeStartDate,
+  onChangeDueDate,
   onSubmit,
   isSyncing,
   lastError,
@@ -67,8 +73,8 @@ const TaskColumn = React.memo(function TaskColumn({
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [inputFocused, setInputFocused] = useState(false);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const isInputEmpty = newTitle.trim() === "";
-  const showDatePicker = inputFocused || !isInputEmpty;
   const inputRef = useRef<HTMLInputElement>(null);
 
   // SmartList 到分组名称的映射
@@ -151,16 +157,29 @@ const TaskColumn = React.memo(function TaskColumn({
             )}
           />
           <div
-            className={cn(
-              "absolute inset-y-0 right-0 flex items-center pr-2 transition-opacity duration-150",
-              showDatePicker ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-            )}
+            className="absolute inset-y-0 right-0 flex items-center pr-2"
           >
-            <DatePicker
-              value={newStartDate}
-              onChange={onChangeStartDate}
-              triggerClassName="pointer-events-auto w-[150px] hover:bg-transparent focus:bg-transparent active:bg-transparent"
-              onConfirm={() => inputRef.current?.focus()}
+            <CalendarModal
+              open={calendarOpen}
+              onOpenChange={setCalendarOpen}
+              startDate={newStartDate}
+              dueDate={newDueDate}
+              onConfirm={(startDate, dueDate) => {
+                onChangeStartDate(startDate);
+                onChangeDueDate(dueDate);
+                inputRef.current?.focus();
+              }}
+              trigger={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  data-empty={!newStartDate}
+                  className="data-[empty=true]:text-muted-foreground h-9 w-[150px] justify-end text-right font-normal border-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent"
+                >
+                  <CalendarIcon className="h-4 w-4 shrink-0" />
+                  {newStartDate ? getDateLabel(newStartDate) : ''}
+                </Button>
+              }
             />
           </div>
         </form>
@@ -256,6 +275,7 @@ const TaskColumn = React.memo(function TaskColumn({
     prevProps.selectedProjectId === nextProps.selectedProjectId &&
     prevProps.newTitle === nextProps.newTitle &&
     prevProps.newStartDate === nextProps.newStartDate &&
+    prevProps.newDueDate === nextProps.newDueDate &&
     prevProps.isSyncing === nextProps.isSyncing &&
     prevProps.lastError === nextProps.lastError &&
     prevProps.columnTitle === nextProps.columnTitle &&
