@@ -7,7 +7,9 @@ import "md-editor-rt/lib/style.css";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { DatePicker } from "@/components/ui/date-picker";
+import CalendarModal from "@/components/modals/CalendarModal";
+import { CalendarDays as CalendarIcon } from "lucide-react";
+import { getDateRangeLabel, isOverdueInTz } from "@/lib/dayjs";
 import { Input } from "@/components/ui/input";
 import { Task, SubTask } from "@/db/schema";
 import { isCompleted, getPriorityConfig, PRIORITY_CONFIG, PriorityLevel } from "./utils";
@@ -29,6 +31,7 @@ export default function TaskDetail({
   const [content, setContent] = useState("");
   const [isSubtaskMode, setIsSubtaskMode] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
   const checkboxRef = useRef<HTMLButtonElement>(null);
   const newSubtaskInputRef = useRef<HTMLInputElement>(null);
@@ -81,9 +84,9 @@ export default function TaskDetail({
     }
   };
 
-  const handleDateChange = (date: number | undefined) => {
+  const handleDateChange = (startDate: number | undefined, dueDate: number | undefined) => {
     if (!task) return;
-    onUpdateTask(task.id, { startDate: date });
+    onUpdateTask(task.id, { startDate, dueDate });
   };
 
   const handlePriorityChange = (priority: PriorityLevel) => {
@@ -209,10 +212,32 @@ export default function TaskDetail({
               priorityConfig.borderColor
             )}
           />
-          <DatePicker
-            value={task?.startDate}
-            onChange={handleDateChange}
-            triggerClassName="h-8"
+          <CalendarModal
+            open={calendarOpen}
+            onOpenChange={setCalendarOpen}
+            startDate={task?.startDate}
+            dueDate={task?.dueDate}
+            onConfirm={handleDateChange}
+            trigger={
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                disabled={!task}
+                data-empty={!task?.startDate}
+                className={cn(
+                  "h-8 justify-start text-left font-normal gap-2",
+                  task?.startDate
+                    ? isOverdueInTz(task.startDate)
+                      ? "text-red-500"
+                      : "text-blue-500"
+                    : "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="h-4 w-4 shrink-0" />
+                {task?.startDate ? getDateRangeLabel(task.startDate, task.dueDate) : '选择日期'}
+              </Button>
+            }
           />
         </div>
         <div className="flex items-center gap-1">

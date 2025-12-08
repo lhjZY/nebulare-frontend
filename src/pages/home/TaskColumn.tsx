@@ -21,7 +21,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import CalendarModal from "@/components/modals/CalendarModal";
 import { CalendarDays as CalendarIcon } from "lucide-react";
-import { getDateLabel } from "@/lib/dayjs";
+import { getDateRangeLabel, isOverdueInTz } from "@/lib/dayjs";
 import { cn } from "@/lib/utils";
 type Props = {
   groups: TaskGroup[];
@@ -41,6 +41,7 @@ type Props = {
   onDeleteTask: (id: string) => void;
   onToggleComplete: (taskId: string, completed: boolean) => void;
   onUpdatePriority: (taskId: string, priority: number) => void;
+  onUpdateTask: (taskId: string, updates: Partial<Task>) => void;
   columnTitle: string;
   inputPlaceholder: string;
   sidebarCollapsed: boolean;
@@ -65,6 +66,7 @@ const TaskColumn = React.memo(function TaskColumn({
   onDeleteTask,
   onToggleComplete,
   onUpdatePriority,
+  onUpdateTask,
   columnTitle,
   inputPlaceholder,
   sidebarCollapsed,
@@ -174,10 +176,17 @@ const TaskColumn = React.memo(function TaskColumn({
                   type="button"
                   variant="ghost"
                   data-empty={!newStartDate}
-                  className="data-[empty=true]:text-muted-foreground h-9 w-[150px] justify-end text-right font-normal border-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent"
+                  className={cn(
+                    "h-9 w-[150px] justify-end text-right font-normal border-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent",
+                    newStartDate
+                      ? isOverdueInTz(newStartDate)
+                        ? "text-red-500"
+                        : "text-blue-500"
+                      : "text-muted-foreground"
+                  )}
                 >
                   <CalendarIcon className="h-4 w-4 shrink-0" />
-                  {newStartDate ? getDateLabel(newStartDate) : ''}
+                  {getDateRangeLabel(newStartDate, newDueDate)}
                 </Button>
               }
             />
@@ -208,6 +217,7 @@ const TaskColumn = React.memo(function TaskColumn({
                       onDelete={() => setPendingDeleteId(task.id)}
                       onToggleComplete={onToggleComplete}
                       onUpdatePriority={onUpdatePriority}
+                      onUpdateTask={onUpdateTask}
                     />
                   ))}
                 </div>

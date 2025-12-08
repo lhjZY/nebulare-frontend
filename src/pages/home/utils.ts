@@ -51,18 +51,6 @@ export function groupTasks(tasks: Task[]): TaskGroup[] {
   ];
 }
 
-export function formatDate(ts?: number | string, tz?: string, isAllDay?: boolean) {
-  if (!ts) return "无日期";
-  const target = parseInTimezone(ts, tz);
-  const dateLabel = isToday(ts, tz)
-    ? "今天"
-    : isTomorrow(ts, tz)
-      ? "明天"
-      : target.format("MM月DD日");
-  const hasTime = !isAllDay && (target.hour() !== 0 || target.minute() !== 0 || target.second() !== 0);
-  return hasTime ? `${dateLabel} ${target.format("HH:mm")}` : dateLabel;
-}
-
 export function isOverdue(ts?: number | string, tz?: string) {
   if (!ts) return false;
   const now = nowInTimezone(tz);

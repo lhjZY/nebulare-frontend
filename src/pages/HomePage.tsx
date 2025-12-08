@@ -216,6 +216,7 @@ export default function HomePage() {
           }}
           onToggleComplete={handleToggleComplete}
           onUpdatePriority={handleUpdatePriority}
+          onUpdateTask={handleUpdateTask}
           columnTitle={columnTitle}
           inputPlaceholder={inputPlaceholder}
           sidebarCollapsed={sidebarCollapsed}

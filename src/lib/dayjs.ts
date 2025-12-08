@@ -74,4 +74,69 @@ export function getDateLabel(ts: number, tz?: string): string {
   return formatDateInTz(ts, tz);
 }
 
+// 判断时间戳是否包含具体时间（非整点0:00）
+export function hasTimeComponent(ts: number, tz?: string): boolean {
+  const d = parseInTimezone(ts, tz);
+  return d.hour() !== 0 || d.minute() !== 0;
+}
+
+/**
+ * TaskItem 专用日期格式
+ * - 无时间：今天/明天/周几/年月日
+ * - 有时间：直接显示 HH:mm
+ */
+export function getTaskItemDateLabel(startDate?: number, tz?: string): string {
+  if (!startDate) return "";
+  
+  if (hasTimeComponent(startDate, tz)) {
+    // 有具体时间，只显示时间
+    return parseInTimezone(startDate, tz).format("HH:mm");
+  }
+  
+  // 无具体时间，显示日期标签
+  return getDateLabel(startDate, tz);
+}
+
+/**
+ * TaskColumn/TaskDetail 专用日期范围格式
+ * - 判断一周内显示：今天/明天/周几，否则显示 M月D日
+ * - 如果有时间，追加 HH:mm
+ * - 如果有 dueDate，格式：12月8日,10:00 - 12月10日,11:00
+ */
+export function getDateRangeLabel(startDate?: number, dueDate?: number, tz?: string): string {
+  if (!startDate) return "";
+  
+  const formatSingleDate = (ts: number): string => {
+    const d = parseInTimezone(ts, tz);
+    let label: string;
+    
+    // 判断日期部分
+    if (isTodayInTz(ts, tz)) {
+      label = "今天";
+    } else if (isTomorrowInTz(ts, tz)) {
+      label = "明天";
+    } else if (isThisWeekInTz(ts, tz)) {
+      label = d.format("ddd");
+    } else {
+      label = d.format("M月D日");
+    }
+    
+    // 如果有时间，追加时间
+    if (hasTimeComponent(ts, tz)) {
+      label += "," + d.format("HH:mm");
+    }
+    
+    return label;
+  };
+  
+  const startLabel = formatSingleDate(startDate);
+  
+  if (!dueDate) {
+    return startLabel;
+  }
+  
+  const endLabel = formatSingleDate(dueDate);
+  return `${startLabel} - ${endLabel}`;
+}
+
 export default dayjs;

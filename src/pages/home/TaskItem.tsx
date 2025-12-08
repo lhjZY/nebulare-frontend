@@ -1,12 +1,14 @@
 import React, { useState, useRef } from "react";
 import { MoreHorizontal, Flag, Trash2 } from "lucide-react";
 import confetti from "canvas-confetti";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Task } from "@/db/schema";
 import { cn } from "@/lib/utils";
-import { formatDate, isOverdue, isCompleted, getPriorityConfig, PRIORITY_CONFIG, PriorityLevel } from "./utils";
-
+import CalendarModal from "@/components/modals/CalendarModal";
+import { isCompleted, getPriorityConfig, PRIORITY_CONFIG, PriorityLevel } from "./utils";
+import { getTaskItemDateLabel, isOverdueInTz } from "@/lib/dayjs";
 type Props = {
   task: Task;
   projectName: string;
@@ -16,10 +18,12 @@ type Props = {
   onDelete: () => void;
   onToggleComplete: (taskId: string, completed: boolean) => void;
   onUpdatePriority: (taskId: string, priority: number) => void;
+  onUpdateTask: (taskId: string, updates: Partial<Task>) => void;
 };
 
-const TaskItem = React.memo(function TaskItem({ task, projectName, projectColor, selected, onSelect, onDelete, onToggleComplete, onUpdatePriority }: Props) {
+const TaskItem = React.memo(function TaskItem({ task, projectName, projectColor, selected, onSelect, onDelete, onToggleComplete, onUpdatePriority, onUpdateTask }: Props) {
   const [isExiting, setIsExiting] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const checkboxRef = useRef<HTMLButtonElement>(null);
   const completed = isCompleted(task.status);
@@ -58,15 +62,15 @@ const TaskItem = React.memo(function TaskItem({ task, projectName, projectColor,
 
   // 有项目颜色时显示项目颜色边框（无论是否完成）
   const showProjectBorder = !!projectColor;
-
+  const inputRef = useRef<HTMLInputElement>(null);
   return (
     <div
       className={cn(
         "group flex w-full items-center gap-3 py-1 text-left hover:bg-surface-variant cursor-pointer transition-all duration-300",
         // 所有 item 统一使用 border-l-4，保持 checkbox 对齐；左边距增大
         "pl-3 pr-2 border-l-4",
+        selected ? "bg-(--theme-sidebar-item-active) text-on-primary" : "text-[#444746] hover:bg-surface-variant",
         showProjectBorder ? "rounded-r" : "border-l-transparent rounded",
-        selected && "bg-surface-variant",
         isExiting && "opacity-0 scale-95 translate-y-4"
       )}
       style={showProjectBorder ? { borderLeftColor: projectColor } : undefined}
@@ -92,18 +96,32 @@ const TaskItem = React.memo(function TaskItem({ task, projectName, projectColor,
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <span className="text-xs text-outline truncate max-w-[80px]">{projectName}</span>
-        {task.startDate && (
-          <span className={cn(
-            "text-xs",
-            completed 
-              ? "text-outline"  // 已完成：灰色
-              : isOverdue(task.startDate, task.timeZone) 
-                ? "text-red-500"  // 未完成+过期：红色
-                : "text-blue-500"  // 未完成+未过期：蓝色
-          )}>
-            {formatDate(task.startDate, task.timeZone, task.isAllDay)}
-          </span>
-        )}
+        <CalendarModal
+          open={calendarOpen}
+          onOpenChange={setCalendarOpen}
+          startDate={task.startDate}
+          dueDate={task.dueDate}
+          onConfirm={(startDate, dueDate) => {
+            onUpdateTask(task.id, { startDate, dueDate });
+          }}
+          trigger={
+            <Button
+              type="button"
+              variant="ghost"
+              data-empty={!task.startDate}
+              className={cn(
+                "p-0 h-9 justify-end text-right font-normal border-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent",
+                task.startDate
+                  ? isOverdueInTz(task.startDate)
+                    ? "text-red-500"
+                    : "text-blue-500"
+                  : "text-muted-foreground"
+              )}
+            >
+              {getTaskItemDateLabel(task.startDate)}
+            </Button>
+          }
+        />
         <Popover open={menuOpen} onOpenChange={setMenuOpen}>
           <PopoverTrigger asChild>
             <button
@@ -165,10 +183,12 @@ const TaskItem = React.memo(function TaskItem({ task, projectName, projectColor,
     prevProps.task.status === nextProps.task.status &&
     prevProps.task.priority === nextProps.task.priority &&
     prevProps.task.startDate === nextProps.task.startDate &&
+    prevProps.task.dueDate === nextProps.task.dueDate &&
     prevProps.task.modifiedTime === nextProps.task.modifiedTime &&
     prevProps.projectName === nextProps.projectName &&
     prevProps.projectColor === nextProps.projectColor &&
-    prevProps.selected === nextProps.selected
+    prevProps.selected === nextProps.selected &&
+    prevProps.onUpdateTask === nextProps.onUpdateTask
   );
 });
 

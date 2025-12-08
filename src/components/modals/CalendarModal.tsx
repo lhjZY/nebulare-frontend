@@ -284,7 +284,7 @@ export default function CalendarModal({
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
-      {trigger && <PopoverTrigger asChild>{trigger}</PopoverTrigger>}
+      {trigger && <PopoverTrigger className="cursor-pointer" asChild>{trigger}</PopoverTrigger>}
       <PopoverContent className="w-[300px] p-2" side="top" align="start">
         <Tabs
           defaultValue="date"
