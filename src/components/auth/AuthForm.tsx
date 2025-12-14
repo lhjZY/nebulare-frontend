@@ -99,9 +99,7 @@ export function AuthForm({ mode, onSuccess, title, subtitle, footer }: AuthFormP
         ? "验证中..."
         : "提交验证码";
 
-  const currentTitle =
-    title ??
-    (isLogin ? "账户登录" : step === "register" ? "注册" : "邮箱验证");
+  const currentTitle = title ?? (isLogin ? "账户登录" : step === "register" ? "注册" : "邮箱验证");
 
   const currentSubtitle =
     subtitle ??
@@ -192,12 +190,8 @@ export function AuthForm({ mode, onSuccess, title, subtitle, footer }: AuthFormP
             {buttonLabel}
           </Button>
         </form>
-        {message && (
-          <p className="text-sm text-outline text-center mt-3">{message}</p>
-        )}
-        {footer && (
-          <div className="mt-4 text-sm text-outline text-center">{footer}</div>
-        )}
+        {message && <p className="text-sm text-outline text-center mt-3">{message}</p>}
+        {footer && <div className="mt-4 text-sm text-outline text-center">{footer}</div>}
       </CardContent>
     </Card>
   );

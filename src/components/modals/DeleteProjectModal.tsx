@@ -7,7 +7,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 
 interface DeleteProjectModalProps {
   open: boolean;
@@ -47,7 +47,7 @@ export function DeleteProjectModal({
             disabled={loading}
             className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
           >
-            {loading ? '删除中...' : '删除'}
+            {loading ? "删除中..." : "删除"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AuthForm } from "@/components/auth/AuthForm";
-import { SparklesText } from '@/components/ui/sparkles-text'
-import { WarpBackground } from '@/components/ui/warp-background'
-import { Sparkles } from 'lucide-react'
+import { SparklesText } from "@/components/ui/sparkles-text";
+import { WarpBackground } from "@/components/ui/warp-background";
+import { Sparkles } from "lucide-react";
 type AuthMode = "login" | "register";
 
 export default function LoginPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<AuthMode>(
-    location.pathname === "/register" ? "register" : "login"
+    location.pathname === "/register" ? "register" : "login",
   );
 
   useEffect(() => {
@@ -40,44 +40,43 @@ export default function LoginPage() {
         beamSize={4}
         beamDuration={4}
       >
-      <div className="mx-auto w-full max-w-md">
-        <div className="mb-8 text-center">
-          <h1 className="mt-4 text-3xl font-semibold text-on-surface">{heading}</h1>
-          <p className="text-sm text-outline">{subheading}</p>
+        <div className="mx-auto w-full max-w-md">
+          <div className="mb-8 text-center">
+            <h1 className="mt-4 text-3xl font-semibold text-on-surface">{heading}</h1>
+            <p className="text-sm text-outline">{subheading}</p>
+          </div>
+
+          <AuthForm
+            mode={mode}
+            onSuccess={() => navigate("/", { replace: true })}
+            footer={
+              mode === "login" ? (
+                <>
+                  还没有账号？{" "}
+                  <button
+                    type="button"
+                    className="text-primary hover:underline"
+                    onClick={() => handleSwitch("register")}
+                  >
+                    去注册
+                  </button>
+                </>
+              ) : (
+                <>
+                  已有账号？{" "}
+                  <button
+                    type="button"
+                    className="text-primary hover:underline"
+                    onClick={() => handleSwitch("login")}
+                  >
+                    去登录
+                  </button>
+                </>
+              )
+            }
+          />
         </div>
-
-        <AuthForm
-          mode={mode}
-          onSuccess={() => navigate("/", { replace: true })}
-          footer={
-            mode === "login" ? (
-              <>
-                还没有账号？{" "}
-                <button
-                  type="button"
-                  className="text-primary hover:underline"
-                  onClick={() => handleSwitch("register")}
-                >
-                  去注册
-                </button>
-              </>
-            ) : (
-              <>
-                已有账号？{" "}
-                <button
-                  type="button"
-                  className="text-primary hover:underline"
-                  onClick={() => handleSwitch("login")}
-                >
-                  去登录
-                </button>
-              </>
-            )
-          }
-        />
-      </div>
-        </WarpBackground>
-
+      </WarpBackground>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import axios, {
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
-  InternalAxiosRequestConfig
+  InternalAxiosRequestConfig,
 } from "axios";
 
 export interface Tokens {
@@ -51,16 +51,15 @@ export const tokenStorage = {
   },
   getRefreshToken(): string | null {
     return this.get()?.refreshToken ?? null;
-  }
+  },
 };
 
 const apiBase =
-  (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_BASE_URL) ||
-  "/api/v1";
+  (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_BASE_URL) || "/api/v1";
 
 const api: AxiosInstance = axios.create({
   baseURL: apiBase,
-  timeout: 15_000
+  timeout: 15_000,
 });
 
 api.interceptors.request.use((config: AuthConfig) => {
@@ -69,7 +68,7 @@ api.interceptors.request.use((config: AuthConfig) => {
     if (access) {
       config.headers = {
         ...config.headers,
-        Authorization: `Bearer ${access}`
+        Authorization: `Bearer ${access}`,
       };
     }
   }
@@ -86,11 +85,10 @@ async function refreshAccessToken(): Promise<string | null> {
 
   if (!refreshPromise) {
     refreshPromise = api
-      .post(
-        "/auth/refresh",
-        { refreshToken },
-        { skipAuth: true, skipRefresh: true } as AxiosRequestConfig
-      )
+      .post("/auth/refresh", { refreshToken }, {
+        skipAuth: true,
+        skipRefresh: true,
+      } as AxiosRequestConfig)
       .then((res) => {
         const accessToken = (res.data as Tokens)?.accessToken;
         if (!accessToken) {
@@ -130,13 +128,13 @@ api.interceptors.response.use(
       }
       config.headers = {
         ...config.headers,
-        Authorization: `Bearer ${newAccess}`
+        Authorization: `Bearer ${newAccess}`,
       };
       return api(config);
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 // 统一的请求封装，默认返回 data
@@ -163,5 +161,5 @@ export const defHttp = {
   },
   delete<T = any>(config: AuthRequestConfig) {
     return request<T>({ ...config, method: "delete" });
-  }
+  },
 };

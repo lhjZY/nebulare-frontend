@@ -18,14 +18,14 @@ export interface VerifyParams {
 export function register(data: RegisterParams): Promise<{ status: string }> {
   return defHttp.post({
     url: "/auth/register",
-    data
+    data,
   });
 }
 
 export async function verify(data: VerifyParams): Promise<Tokens> {
   const tokens = await defHttp.post<Tokens>({
     url: "/auth/verify",
-    data
+    data,
   });
   tokenStorage.set(tokens);
   return tokens;
@@ -34,7 +34,7 @@ export async function verify(data: VerifyParams): Promise<Tokens> {
 export async function login(data: LoginParams): Promise<Tokens> {
   const tokens = await defHttp.post<Tokens>({
     url: "/auth/login",
-    data
+    data,
   });
   tokenStorage.set(tokens);
   return tokens;
@@ -44,7 +44,7 @@ export async function refresh(): Promise<Tokens> {
   const tokens = await defHttp.post<Tokens>({
     url: "/auth/refresh",
     data: { refreshToken: tokenStorage.getRefreshToken() },
-    skipRefresh: true // 避免递归重试
+    skipRefresh: true, // 避免递归重试
   });
   tokenStorage.set(tokens);
   return tokens;

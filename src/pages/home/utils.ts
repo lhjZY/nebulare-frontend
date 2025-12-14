@@ -1,4 +1,4 @@
-import dayjs, { nowInTimezone, parseInTimezone, getBrowserTimezone } from "@/lib/dayjs";
+import { nowInTimezone, parseInTimezone, getBrowserTimezone } from "@/lib/dayjs";
 import { Task } from "@/db/schema";
 import { TaskGroup } from "./types";
 
@@ -47,7 +47,7 @@ export function groupTasks(tasks: Task[]): TaskGroup[] {
     { group: "明天", tasks: tomorrow },
     { group: "最近7天", tasks: week },
     { group: "无日期", tasks: nodate },
-    { group: "已完成", tasks: completed }
+    { group: "已完成", tasks: completed },
   ];
 }
 
@@ -69,8 +69,10 @@ export function isWeek(ts?: number | string, tz?: string) {
   const target = parseInTimezone(ts, tz);
   const weekEnd = now.add(6, "day");
   // 在今天或之后，并且在7天内（包含第7天）
-  return (target.isSame(now, "day") || target.isAfter(now, "day")) && 
-         (target.isBefore(weekEnd, "day") || target.isSame(weekEnd, "day"));
+  return (
+    (target.isSame(now, "day") || target.isAfter(now, "day")) &&
+    (target.isBefore(weekEnd, "day") || target.isSame(weekEnd, "day"))
+  );
 }
 
 export function isTomorrow(ts?: number | string, tz?: string) {
@@ -85,10 +87,25 @@ export function isCompleted(status?: number) {
 
 // 优先级配置
 export const PRIORITY_CONFIG = {
-  0: { label: "默认", color: "text-gray-400", borderColor: "border-gray-300", bgColor: "bg-gray-400" },
-  1: { label: "低", color: "text-blue-500", borderColor: "border-blue-500", bgColor: "bg-blue-500" },
-  2: { label: "中", color: "text-yellow-500", borderColor: "border-yellow-500", bgColor: "bg-yellow-500" },
-  3: { label: "高", color: "text-red-500", borderColor: "border-red-500", bgColor: "bg-red-500" }
+  0: {
+    label: "默认",
+    color: "text-gray-400",
+    borderColor: "border-gray-300",
+    bgColor: "bg-gray-400",
+  },
+  1: {
+    label: "低",
+    color: "text-blue-500",
+    borderColor: "border-blue-500",
+    bgColor: "bg-blue-500",
+  },
+  2: {
+    label: "中",
+    color: "text-yellow-500",
+    borderColor: "border-yellow-500",
+    bgColor: "bg-yellow-500",
+  },
+  3: { label: "高", color: "text-red-500", borderColor: "border-red-500", bgColor: "bg-red-500" },
 } as const;
 
 export type PriorityLevel = keyof typeof PRIORITY_CONFIG;

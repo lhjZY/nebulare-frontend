@@ -87,12 +87,12 @@ export function hasTimeComponent(ts: number, tz?: string): boolean {
  */
 export function getTaskItemDateLabel(startDate?: number, tz?: string): string {
   if (!startDate) return "";
-  
+
   if (hasTimeComponent(startDate, tz)) {
     // 有具体时间，只显示时间
     return parseInTimezone(startDate, tz).format("HH:mm");
   }
-  
+
   // 无具体时间，显示日期标签
   return getDateLabel(startDate, tz);
 }
@@ -105,11 +105,11 @@ export function getTaskItemDateLabel(startDate?: number, tz?: string): string {
  */
 export function getDateRangeLabel(startDate?: number, dueDate?: number, tz?: string): string {
   if (!startDate) return "";
-  
+
   const formatSingleDate = (ts: number): string => {
     const d = parseInTimezone(ts, tz);
     let label: string;
-    
+
     // 判断日期部分
     if (isTodayInTz(ts, tz)) {
       label = "今天";
@@ -120,21 +120,21 @@ export function getDateRangeLabel(startDate?: number, dueDate?: number, tz?: str
     } else {
       label = d.format("M月D日");
     }
-    
+
     // 如果有时间，追加时间
     if (hasTimeComponent(ts, tz)) {
       label += "," + d.format("HH:mm");
     }
-    
+
     return label;
   };
-  
+
   const startLabel = formatSingleDate(startDate);
-  
+
   if (!dueDate) {
     return startLabel;
   }
-  
+
   const endLabel = formatSingleDate(dueDate);
   return `${startLabel} - ${endLabel}`;
 }

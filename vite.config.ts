@@ -6,16 +6,16 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src")
-    }
+      "@": path.resolve(__dirname, "./src"),
+    },
   },
   server: {
     port: 5178,
     proxy: {
-      '/api/v1': {
-        target: 'http://localhost:3000',
+      "/api/v1": {
+        target: "http://localhost:3000",
         changeOrigin: true,
       },
     },
-  }
+  },
 });

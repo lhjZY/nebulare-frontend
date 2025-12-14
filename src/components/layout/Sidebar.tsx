@@ -1,4 +1,3 @@
-
 import AvatarMenu from "@/components/ui/avatar-menu";
 import { Link } from "react-router-dom";
 import { ListTodo } from "lucide-react";

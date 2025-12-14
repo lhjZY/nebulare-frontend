@@ -14,7 +14,7 @@ const localStorageMock = {
   },
   clear: () => {
     Object.keys(localStore).forEach((k) => delete localStore[k]);
-  }
+  },
 };
 
 // Ensure localStorage exists in test env

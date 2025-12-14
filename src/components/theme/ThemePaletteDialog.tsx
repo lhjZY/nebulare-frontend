@@ -6,7 +6,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useTheme } from "@/theme/theme-context";
 import { cn } from "@/lib/utils";
@@ -46,7 +46,7 @@ export function ThemePaletteDialog({ open, onOpenChange }: ThemePaletteDialogPro
                 <span
                   className={cn(
                     "relative h-14 w-14 rounded-xl border border-outline/30 bg-white shadow-xs ring-offset-2 transition hover:shadow-md",
-                    active ? "ring-2 ring-(--theme-primary)" : "ring-1 ring-transparent"
+                    active ? "ring-2 ring-(--theme-primary)" : "ring-1 ring-transparent",
                   )}
                   style={{ background: item.asideBg ?? item.color }}
                 >

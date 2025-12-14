@@ -1,0 +1,8 @@
+dist
+node_modules
+public
+docs
+.vscode
+.vitest-cache
+pnpm-lock.yaml
+*.log

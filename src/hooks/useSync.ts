@@ -3,7 +3,7 @@ import { syncOnce } from "@/services/sync";
 import { tokenStorage } from "@/utils/http/axios";
 
 type UseSyncOptions = {
-  intervalMs?: number
+  intervalMs?: number;
   debounceMs?: number;
 };
 

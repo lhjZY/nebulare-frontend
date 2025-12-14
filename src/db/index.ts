@@ -12,7 +12,7 @@ class TickDB extends Dexie implements TickDBSchema {
       // 索引：id 主键；projectId/ status / syncStatus / isDeleted / modifiedTime / dueDate 便于过滤与同步
       tasks: "id, projectId, status, syncStatus, isDeleted, modifiedTime, dueDate",
       projects: "id, syncStatus, isDeleted, modifiedTime",
-      meta: "key"
+      meta: "key",
     });
   }
 }
@@ -20,7 +20,9 @@ class TickDB extends Dexie implements TickDBSchema {
 export const db = new TickDB();
 
 // 默认值助手：创建本地新任务时统一补齐字段
-export function createLocalTask(partial: Partial<Task> & Pick<Task, "id" | "projectId" | "title">): Task {
+export function createLocalTask(
+  partial: Partial<Task> & Pick<Task, "id" | "projectId" | "title">,
+): Task {
   const now = Date.now();
   return {
     content: "",
@@ -34,11 +36,13 @@ export function createLocalTask(partial: Partial<Task> & Pick<Task, "id" | "proj
     isDeleted: false,
     modifiedTime: now,
     syncStatus: "created",
-    ...partial
+    ...partial,
   };
 }
 
-export function createLocalProject(partial: Partial<Project> & Pick<Project, "id" | "name">): Project {
+export function createLocalProject(
+  partial: Partial<Project> & Pick<Project, "id" | "name">,
+): Project {
   const now = Date.now();
   return {
     sortOrder: now,
@@ -48,7 +52,7 @@ export function createLocalProject(partial: Partial<Project> & Pick<Project, "id
     isDeleted: false,
     modifiedTime: now,
     syncStatus: "created",
-    ...partial
+    ...partial,
   };
 }
 
@@ -70,7 +74,7 @@ export function mapApiTaskToLocal(api: any): Task {
     items: Array.isArray(api.items) ? api.items : [],
     isDeleted: !!api.isDeleted,
     modifiedTime: api.modifiedTime ?? Date.now(),
-    syncStatus: "synced"
+    syncStatus: "synced",
   };
 }
 
@@ -89,7 +93,7 @@ export function mapApiProjectToLocal(api: any): Project {
     parentId: api.parentId ?? "",
     isDeleted: !!api.isDeleted,
     modifiedTime: api.modifiedTime ?? Date.now(),
-    syncStatus: "synced"
+    syncStatus: "synced",
   };
 }
 

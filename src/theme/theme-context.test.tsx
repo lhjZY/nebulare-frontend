@@ -20,7 +20,13 @@ beforeEach(() => {
 
 describe("applyTheme", () => {
   it("writes CSS variables based on preset", () => {
-    applyTheme({ id: "test", name: "Test", color: "#123456", asideBg: "#abcdef", inputBorder: "#111111" });
+    applyTheme({
+      id: "test",
+      name: "Test",
+      color: "#123456",
+      asideBg: "#abcdef",
+      inputBorder: "#111111",
+    });
     const style = document.documentElement.style;
     expect(style.getPropertyValue("--theme-primary")).toBe("#123456");
     expect(style.getPropertyValue("--theme-aside-bg")).toBe("#abcdef");
@@ -47,7 +53,7 @@ describe("ThemeProvider", () => {
       root.render(
         <ThemeProvider>
           <Capture />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
     });
 

@@ -5,11 +5,11 @@ export default defineConfig({
   cacheDir: "./.vitest-cache",
   test: {
     environment: "jsdom",
-    globals: true
+    globals: true,
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src")
-    }
-  }
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
 });

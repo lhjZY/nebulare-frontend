@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { ProjectModal } from '@/components/modals/ProjectModal';
-import { DeleteProjectModal } from '@/components/modals/DeleteProjectModal';
+import { useState, useEffect } from "react";
+import { ProjectModal } from "@/components/modals/ProjectModal";
+import { DeleteProjectModal } from "@/components/modals/DeleteProjectModal";
 import {
   listProjects,
   createProject,
@@ -8,10 +8,10 @@ import {
   deleteProject,
   ProjectResponse,
   ProjectPayload,
-} from '@/api/projects';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Plus, Edit2, Trash2, FolderOpen } from 'lucide-react';
+} from "@/api/projects";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Plus, Edit2, Trash2, FolderOpen } from "lucide-react";
 
 export function ProjectsPage() {
   const [projects, setProjects] = useState<ProjectResponse[]>([]);
@@ -39,7 +39,7 @@ export function ProjectsPage() {
       const data = await listProjects();
       setProjects(data);
     } catch (error) {
-      console.error('Failed to load projects:', error);
+      console.error("Failed to load projects:", error);
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ export function ProjectsPage() {
       await loadProjects();
       setProjectModal({ open: false, project: null });
     } catch (error) {
-      console.error('Failed to save project:', error);
+      console.error("Failed to save project:", error);
       throw error;
     }
   };
@@ -75,7 +75,7 @@ export function ProjectsPage() {
       await loadProjects();
       setDeleteModal({ open: false, project: null });
     } catch (error) {
-      console.error('Failed to delete project:', error);
+      console.error("Failed to delete project:", error);
     } finally {
       setDeleteLoading(false);
     }
@@ -143,11 +143,9 @@ export function ProjectsPage() {
                     style={{ backgroundColor: project.color }}
                   />
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 truncate">
-                      {project.name}
-                    </h3>
+                    <h3 className="font-semibold text-gray-900 truncate">{project.name}</h3>
                     <p className="text-xs text-gray-500 mt-1">
-                      {project.kind === 'TASK' ? '任务列表' : '笔记本'}
+                      {project.kind === "TASK" ? "任务列表" : "笔记本"}
                     </p>
                   </div>
                 </div>
@@ -189,7 +187,7 @@ export function ProjectsPage() {
       {/* 删除确认弹窗 */}
       <DeleteProjectModal
         open={deleteModal.open}
-        projectName={deleteModal.project?.name || ''}
+        projectName={deleteModal.project?.name || ""}
         onClose={() => setDeleteModal({ open: false, project: null })}
         onConfirm={handleDeleteProject}
         loading={deleteLoading}

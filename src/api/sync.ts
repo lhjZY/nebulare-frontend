@@ -25,6 +25,6 @@ export type SyncResponse = {
 export function postSync(payload: SyncPayload): Promise<SyncResponse> {
   return defHttp.post<SyncResponse>({
     url: "/sync",
-    data: payload
+    data: payload,
   });
 }

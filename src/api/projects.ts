@@ -31,7 +31,7 @@ export interface ListProjectsParams {
 export async function listProjects(params: ListProjectsParams = {}): Promise<ProjectResponse[]> {
   const res = await defHttp.get<{ items: ProjectResponse[] }>({
     url: "/projects",
-    params
+    params,
   });
   return res.items ?? [];
 }
@@ -39,20 +39,20 @@ export async function listProjects(params: ListProjectsParams = {}): Promise<Pro
 export async function createProject(payload: ProjectPayload): Promise<ProjectResponse> {
   return defHttp.post<ProjectResponse>({
     url: "/projects",
-    data: payload
+    data: payload,
   });
 }
 
 export async function updateProject(id: string, payload: ProjectPayload): Promise<ProjectResponse> {
   return defHttp.put<ProjectResponse>({
     url: `/projects/${id}`,
-    data: payload
+    data: payload,
   });
 }
 
 export async function deleteProject(id: string): Promise<void> {
   await defHttp.delete({
-    url: `/projects/${id}`
+    url: `/projects/${id}`,
   });
 }
 

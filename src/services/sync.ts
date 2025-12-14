@@ -1,6 +1,12 @@
 import Dexie from "dexie";
-import { db, mapApiProjectToLocal, mapApiTaskToLocal, mapLocalProjectToApi, mapLocalTaskToApi } from "@/db";
-import { postSync, SyncChanges, SyncPayload, SyncResponse } from "@/api/sync";
+import {
+  db,
+  mapApiProjectToLocal,
+  mapApiTaskToLocal,
+  mapLocalProjectToApi,
+  mapLocalTaskToApi,
+} from "@/db";
+import { postSync, SyncChanges, SyncPayload } from "@/api/sync";
 
 const CHECKPOINT_KEY = "checkPoint";
 
@@ -12,7 +18,10 @@ export async function syncOnce(): Promise<{
   const checkPointRecord = await db.meta.get(CHECKPOINT_KEY);
   const checkPoint = (checkPointRecord?.value as number) ?? 0;
 
-  const [dirtyTasks, dirtyProjects] = await Promise.all([db.tasks.toArray(), db.projects.toArray()]);
+  const [dirtyTasks, dirtyProjects] = await Promise.all([
+    db.tasks.toArray(),
+    db.projects.toArray(),
+  ]);
 
   const pendingTasks = dirtyTasks.filter((t) => t.syncStatus !== "synced");
   const pendingProjects = dirtyProjects.filter((p) => p.syncStatus !== "synced");
@@ -27,18 +36,18 @@ export async function syncOnce(): Promise<{
     return {
       uploaded: 0,
       downloaded: 0,
-      checkPoint
+      checkPoint,
     };
   }
 
   const changes: SyncPayload["changes"] = {
     tasks: splitChanges(pendingTasks, mapLocalTaskToApi),
-    projects: splitChanges(pendingProjects, mapLocalProjectToApi)
+    projects: splitChanges(pendingProjects, mapLocalProjectToApi),
   };
 
   const payload: SyncPayload = {
     checkPoint,
-    changes
+    changes,
   };
 
   const res = await postSync(payload);
@@ -68,13 +77,13 @@ export async function syncOnce(): Promise<{
   return {
     uploaded: pendingTasks.length + pendingProjects.length,
     downloaded,
-    checkPoint: newCheckPoint
+    checkPoint: newCheckPoint,
   };
 }
 
 function splitChanges<T>(
   rows: (T & { syncStatus: string })[],
-  mapToApi: (row: T) => any
+  mapToApi: (row: T) => any,
 ): SyncChanges<any> {
   const add: any[] = [];
   const update: any[] = [];
@@ -97,14 +106,19 @@ function splitChanges<T>(
 async function applyUpdates<T extends { id: string; modifiedTime?: number }>(
   items: any[] | undefined,
   table: Dexie.Table<T, string>,
-  mapToLocal: (api: any) => T
+  mapToLocal: (api: any) => T,
 ) {
   if (!items || items.length === 0) return;
 
   for (const apiItem of items) {
     const local = await table.get(apiItem.id);
     const incoming = mapToLocal(apiItem);
-    if (local && local.modifiedTime && incoming.modifiedTime && local.modifiedTime > incoming.modifiedTime) {
+    if (
+      local &&
+      local.modifiedTime &&
+      incoming.modifiedTime &&
+      local.modifiedTime > incoming.modifiedTime
+    ) {
       // 本地版本更新，跳过覆盖
       continue;
     }

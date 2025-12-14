@@ -1,24 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-import { Calendar } from '@/components/ui/calendar';
-import { Button } from '@/components/ui/button';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Checkbox } from '@/components/ui/checkbox';
-import { zhCN } from 'date-fns/locale';
-import dayjs from '@/lib/dayjs';
-import type { DateRange } from 'react-day-picker';
-import { Check, Clock, ChevronDown, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useState, useEffect, useRef } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Checkbox } from "@/components/ui/checkbox";
+import { zhCN } from "date-fns/locale";
+import dayjs from "@/lib/dayjs";
+import type { DateRange } from "react-day-picker";
+import { Check, Clock, ChevronDown, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 type CalendarModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -31,17 +22,17 @@ type CalendarModalProps = {
 // 生成时间选项（00:00 - 24:00，半小时间隔）
 const TIME_OPTIONS = Array.from({ length: 49 }, (_, i) => {
   const hours = Math.floor(i / 2);
-  const minutes = i % 2 === 0 ? '00' : '30';
-  return `${hours.toString().padStart(2, '0')}:${minutes}`;
+  const minutes = i % 2 === 0 ? "00" : "30";
+  return `${hours.toString().padStart(2, "0")}:${minutes}`;
 });
-const DEFAULT_TIMEZONE = 'Asia/Shanghai';
+const DEFAULT_TIMEZONE = "Asia/Shanghai";
 
 const getDefaultRangePreset = () => {
   const base = dayjs().tz(DEFAULT_TIMEZONE);
   return {
-    today: base.startOf('day').toDate(),
-    defaultStartTime: base.add(1, 'hour').startOf('hour').format('HH:mm'),
-    defaultEndTime: base.add(2, 'hour').startOf('hour').format('HH:mm'),
+    today: base.startOf("day").toDate(),
+    defaultStartTime: base.add(1, "hour").startOf("hour").format("HH:mm"),
+    defaultEndTime: base.add(2, "hour").startOf("hour").format("HH:mm"),
   };
 };
 
@@ -49,7 +40,7 @@ const getDefaultRangePreset = () => {
 function TimeSelect({
   value,
   onChange,
-  placeholder = '选择时间',
+  placeholder = "选择时间",
   leading,
   disabled = false,
 }: {
@@ -66,7 +57,7 @@ function TimeSelect({
     if (!open) return;
 
     if (!value) {
-      const nextHour = dayjs().tz(DEFAULT_TIMEZONE).add(1, 'hour').startOf('hour').format('HH:mm');
+      const nextHour = dayjs().tz(DEFAULT_TIMEZONE).add(1, "hour").startOf("hour").format("HH:mm");
       const fallback = TIME_OPTIONS.includes(nextHour)
         ? nextHour
         : TIME_OPTIONS[TIME_OPTIONS.length - 1];
@@ -77,7 +68,7 @@ function TimeSelect({
     const frame = requestAnimationFrame(() => {
       if (!listRef.current) return;
       const target = listRef.current.querySelector<HTMLButtonElement>(`[data-time="${value}"]`);
-      target?.scrollIntoView({ block: 'center' });
+      target?.scrollIntoView({ block: "center" });
     });
 
     return () => cancelAnimationFrame(frame);
@@ -97,12 +88,14 @@ function TimeSelect({
           disabled={disabled}
           className={cn(
             "flex h-9 w-full items-center justify-between rounded-lg px-3 text-sm transition-colors",
-            disabled ? "bg-muted/60 text-muted-foreground cursor-not-allowed" : "bg-muted hover:bg-muted/80"
+            disabled
+              ? "bg-muted/60 text-muted-foreground cursor-not-allowed"
+              : "bg-muted hover:bg-muted/80",
           )}
         >
           <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
             {leading}
-            <span className={value ? 'text-foreground' : 'text-muted-foreground'}>
+            <span className={value ? "text-foreground" : "text-muted-foreground"}>
               {value || placeholder}
             </span>
           </div>
@@ -120,7 +113,7 @@ function TimeSelect({
             <ChevronDown
               className={cn(
                 "h-4 w-4 shrink-0 transition-transform",
-                open ? "rotate-0" : "-rotate-90"
+                open ? "rotate-0" : "-rotate-90",
               )}
             />
           )}
@@ -136,7 +129,7 @@ function TimeSelect({
                 data-time={time}
                 className={cn(
                   "flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
-                  value === time && "bg-accent text-accent-foreground"
+                  value === time && "bg-accent text-accent-foreground",
                 )}
                 onClick={() => {
                   onChange(time);
@@ -163,11 +156,11 @@ export default function CalendarModal({
   trigger,
 }: CalendarModalProps) {
   // 当前选中的 tab
-  const [activeTab, setActiveTab] = useState<'date' | 'timePeriod'>('date');
+  const [activeTab, setActiveTab] = useState<"date" | "timePeriod">("date");
 
   // 日期模式的草稿状态（单选 startDate）
   const [draftSingleDate, setDraftSingleDate] = useState<Date | undefined>(
-    startDate ? new Date(startDate) : undefined
+    startDate ? new Date(startDate) : undefined,
   );
   // 日期模式的时间
   const [draftSingleTime, setDraftSingleTime] = useState<string | undefined>();
@@ -179,7 +172,7 @@ export default function CalendarModal({
           from: startDate ? new Date(startDate) : undefined,
           to: dueDate ? new Date(dueDate) : undefined,
         }
-      : undefined
+      : undefined,
   );
   // 时间段模式的时间
   const [draftStartTime, setDraftStartTime] = useState<string | undefined>();
@@ -199,7 +192,7 @@ export default function CalendarModal({
     // 四舍五入到最近的半小时
     const roundedMinutes = m < 15 ? 0 : m < 45 ? 30 : 0;
     const roundedHours = m >= 45 ? h + 1 : h;
-    return `${roundedHours.toString().padStart(2, '0')}:${roundedMinutes === 0 ? '00' : '30'}`;
+    return `${roundedHours.toString().padStart(2, "0")}:${roundedMinutes === 0 ? "00" : "30"}`;
   };
 
   // 弹窗打开时重置草稿状态
@@ -207,13 +200,15 @@ export default function CalendarModal({
     if (open) {
       // 根据是否有 dueDate/startDate 决定默认 tab；都为空则默认日期 tab 且选中今天
       if (startDate && dueDate) {
-        setActiveTab('timePeriod');
+        setActiveTab("timePeriod");
       } else {
-        setActiveTab('date');
+        setActiveTab("date");
       }
 
       const { today, defaultStartTime, defaultEndTime } = getDefaultRangePreset();
-      setDraftSingleDate(startDate ? new Date(startDate) : (!startDate && !dueDate ? today : undefined));
+      setDraftSingleDate(
+        startDate ? new Date(startDate) : !startDate && !dueDate ? today : undefined,
+      );
       setDraftSingleTime(extractTime(startDate));
       setDraftRange(
         startDate || dueDate
@@ -224,7 +219,7 @@ export default function CalendarModal({
           : {
               from: today,
               to: today,
-            }
+            },
       );
       const startTimeVal = startDate ? extractTime(startDate) : defaultStartTime;
       const endTimeVal = dueDate ? extractTime(dueDate) : defaultEndTime;
@@ -240,30 +235,27 @@ export default function CalendarModal({
     if (!date) return undefined;
     const base = dayjs(date).tz(DEFAULT_TIMEZONE);
     if (!time) return base.valueOf();
-    const [hours, minutes] = time.split(':').map(Number);
+    const [hours, minutes] = time.split(":").map(Number);
     const combined = base.hour(hours).minute(minutes).second(0).millisecond(0);
     return combined.valueOf();
   };
 
   const handleConfirm = () => {
-    if (activeTab === 'date') {
+    if (activeTab === "date") {
       // 日期模式：只设置 startDate，清除 dueDate
-      onConfirm(
-        combineDateTime(draftSingleDate, draftSingleTime),
-        undefined
-      );
+      onConfirm(combineDateTime(draftSingleDate, draftSingleTime), undefined);
     } else {
       // 时间段模式：设置 startDate 和 dueDate
       onConfirm(
         combineDateTime(draftRange?.from, draftStartTime),
-        combineDateTime(draftRange?.to, draftEndTime)
+        combineDateTime(draftRange?.to, draftEndTime),
       );
     }
     onOpenChange(false);
   };
 
   const handleClear = () => {
-    if (activeTab === 'date') {
+    if (activeTab === "date") {
       setDraftSingleDate(undefined);
       setDraftSingleTime(undefined);
     } else {
@@ -278,18 +270,22 @@ export default function CalendarModal({
 
   // 格式化显示日期
   const formatDisplayDate = (date?: Date) => {
-    if (!date) return '选择日期';
-    return dayjs(date).tz(DEFAULT_TIMEZONE).format('YY/M/D');
+    if (!date) return "选择日期";
+    return dayjs(date).tz(DEFAULT_TIMEZONE).format("YY/M/D");
   };
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
-      {trigger && <PopoverTrigger className="cursor-pointer" asChild>{trigger}</PopoverTrigger>}
+      {trigger && (
+        <PopoverTrigger className="cursor-pointer" asChild>
+          {trigger}
+        </PopoverTrigger>
+      )}
       <PopoverContent className="w-[300px] p-2" side="top" align="start">
         <Tabs
           defaultValue="date"
           value={activeTab}
-          onValueChange={(v) => setActiveTab(v as 'date' | 'timePeriod')}
+          onValueChange={(v) => setActiveTab(v as "date" | "timePeriod")}
         >
           <TabsList className="w-full rounded-none rounded-t-lg">
             <TabsTrigger value="date" className="flex-1">
@@ -307,7 +303,7 @@ export default function CalendarModal({
                 selected={draftSingleDate}
                 onSelect={(date) => setDraftSingleDate(date ?? undefined)}
                 formatters={{
-                  formatMonthDropdown: (date) => dayjs(date).format('MMM'),
+                  formatMonthDropdown: (date) => dayjs(date).format("MMM"),
                 }}
               />
               <div className="mt-2">
@@ -347,7 +343,7 @@ export default function CalendarModal({
                         setStartDatePickerOpen(false);
                       }}
                       formatters={{
-                        formatMonthDropdown: (date) => dayjs(date).format('MMM'),
+                        formatMonthDropdown: (date) => dayjs(date).format("MMM"),
                       }}
                     />
                   </PopoverContent>
@@ -383,7 +379,7 @@ export default function CalendarModal({
                         setEndDatePickerOpen(false);
                       }}
                       formatters={{
-                        formatMonthDropdown: (date) => dayjs(date).format('MMM'),
+                        formatMonthDropdown: (date) => dayjs(date).format("MMM"),
                       }}
                     />
                   </PopoverContent>

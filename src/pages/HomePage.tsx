@@ -12,8 +12,14 @@ import TaskDetail from "./home/TaskDetail";
 import ResizeHandle from "./home/ResizeHandle";
 
 export default function HomePage() {
-  const { setSyncState, syncState, selectedProjectId, selectedTaskId, setSelectedProject, setSelectedTask } =
-    useAppStore();
+  const {
+    setSyncState,
+    syncState,
+    selectedProjectId,
+    selectedTaskId,
+    setSelectedProject,
+    setSelectedTask,
+  } = useAppStore();
   const { syncNow, isSyncing, lastError, lastRun } = useSync();
   const [newTitle, setNewTitle] = useState("");
   const [newStartDate, setNewStartDate] = useState<number | undefined>(undefined);
@@ -24,7 +30,7 @@ export default function HomePage() {
   const handleToggleSidebar = () => {
     const panel = sidebarPanelRef.current;
     if (!panel) return;
-    
+
     if (sidebarCollapsed) {
       panel.expand();
     } else {
@@ -43,12 +49,14 @@ export default function HomePage() {
       return rows.filter((p) => !p.isDeleted).sort((a, b) => a.sortOrder - b.sortOrder);
     },
     [],
-    []
+    [],
   );
 
   // SmartList 分类（只关注时间，显示所有任务）
   const timeBasedSmartLists = ["all", "today", "tomorrow", "week"];
-  const isTimeBasedSmartList = selectedProjectId ? timeBasedSmartLists.includes(selectedProjectId) : true;
+  const isTimeBasedSmartList = selectedProjectId
+    ? timeBasedSmartLists.includes(selectedProjectId)
+    : true;
 
   // 用于 Sidebar 统计的所有任务
   const allTasks = useLiveQuery(
@@ -56,23 +64,23 @@ export default function HomePage() {
       return (await db.tasks.toArray()).filter((t) => !t.isDeleted);
     },
     [],
-    []
+    [],
   );
 
   // 用于 TaskColumn 显示的过滤后任务
   const tasks = useMemo(() => {
     if (!allTasks) return [];
-    
+
     // 基于时间的 SmartList（all, today, tomorrow, week）：显示所有任务
     if (isTimeBasedSmartList) {
       return allTasks;
     }
-    
+
     // 收集箱：只显示未分配项目的任务
     if (selectedProjectId === "inbox") {
       return allTasks.filter((t) => t.projectId === "inbox");
     }
-    
+
     // 具体项目：只显示该项目的任务
     return allTasks.filter((t) => t.projectId === selectedProjectId);
   }, [allTasks, selectedProjectId, isTimeBasedSmartList]);
@@ -97,7 +105,7 @@ export default function HomePage() {
     all: "所有",
     today: "今天",
     tomorrow: "明天",
-    week: "最近7天"
+    week: "最近7天",
   };
 
   // 判断是否选中了 SmartList
@@ -125,7 +133,13 @@ export default function HomePage() {
     if (!title) return;
     // 如果选中了 SmartList，则任务归入 inbox；否则归入具体项目
     const projectId = isSmartList ? "inbox" : (selectedProjectId ?? "inbox");
-    const task = createLocalTask({ id: uuid(), projectId, title, startDate: newStartDate, dueDate: newDueDate });
+    const task = createLocalTask({
+      id: uuid(),
+      projectId,
+      title,
+      startDate: newStartDate,
+      dueDate: newDueDate,
+    });
     await db.tasks.put(task);
     setNewTitle("");
     setNewStartDate(undefined);
@@ -139,7 +153,7 @@ export default function HomePage() {
       status: newStatus,
       progress: completed ? 100 : 0,
       syncStatus: "updated",
-      modifiedTime: Date.now()
+      modifiedTime: Date.now(),
     });
     syncNow();
   };
@@ -148,7 +162,7 @@ export default function HomePage() {
     await db.tasks.update(taskId, {
       ...updates,
       syncStatus: "updated",
-      modifiedTime: Date.now()
+      modifiedTime: Date.now(),
     });
     syncNow();
   };
@@ -157,7 +171,7 @@ export default function HomePage() {
     await db.tasks.update(taskId, {
       priority,
       syncStatus: "updated",
-      modifiedTime: Date.now()
+      modifiedTime: Date.now(),
     });
     syncNow();
   };
@@ -170,12 +184,12 @@ export default function HomePage() {
 
   return (
     <PanelGroup direction="horizontal" className="h-full">
-      <Panel 
+      <Panel
         id="sidebar"
         order={1}
         ref={sidebarPanelRef}
-        defaultSize={20} 
-        minSize={12} 
+        defaultSize={20}
+        minSize={12}
         maxSize={60}
         collapsible
         collapsedSize={0}
@@ -208,7 +222,11 @@ export default function HomePage() {
           isSyncing={syncState.isSyncing}
           lastError={syncState.lastError}
           onDeleteTask={async (id) => {
-            await db.tasks.update(id, { isDeleted: true, syncStatus: "deleted", modifiedTime: Date.now() });
+            await db.tasks.update(id, {
+              isDeleted: true,
+              syncStatus: "deleted",
+              modifiedTime: Date.now(),
+            });
             if (selectedTaskId === id) {
               setSelectedTask(null);
             }
@@ -226,8 +244,8 @@ export default function HomePage() {
       <ResizeHandle />
       <Panel id="detail" order={3} defaultSize={20} minSize={18} maxSize={35}>
         {detailTask ? (
-          <TaskDetail 
-            task={detailTask} 
+          <TaskDetail
+            task={detailTask}
             projectLookup={projectLookup}
             onToggleComplete={handleToggleComplete}
             onUpdateTask={handleUpdateTask}

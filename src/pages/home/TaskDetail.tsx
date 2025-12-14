@@ -23,11 +23,7 @@ type Props = {
   onUpdateTask: (taskId: string, updates: Partial<Task>) => void;
 };
 
-export default function TaskDetail({
-  task,
-  onToggleComplete,
-  onUpdateTask
-}: Props) {
+export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Props) {
   const [content, setContent] = useState("");
   const [isSubtaskMode, setIsSubtaskMode] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
@@ -58,7 +54,7 @@ export default function TaskDetail({
     const rect = checkboxRef.current.getBoundingClientRect();
     const x = (rect.left + rect.width / 2) / window.innerWidth;
     const y = (rect.top + rect.height / 2) / window.innerHeight;
-    
+
     confetti({
       particleCount: 50,
       spread: 60,
@@ -66,7 +62,7 @@ export default function TaskDetail({
       colors: ["#FFD700", "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4"],
       scalar: 0.8,
       gravity: 1.2,
-      ticks: 150
+      ticks: 150,
     });
   };
 
@@ -104,7 +100,7 @@ export default function TaskDetail({
 
   // 将文本内容转换为子任务列表
   const convertToSubtasks = (): SubTask[] => {
-    const lines = content.split("\n").filter(line => line.trim());
+    const lines = content.split("\n").filter((line) => line.trim());
     return lines.map((line, index) => {
       // 解析已有的 markdown checkbox 格式
       const checkboxMatch = line.match(/^\s*[-*]\s*\[([ xX])\]\s*(.*)/);
@@ -113,7 +109,7 @@ export default function TaskDetail({
           id: uuid(),
           title: checkboxMatch[2].trim(),
           completed: checkboxMatch[1].toLowerCase() === "x",
-          sortOrder: index
+          sortOrder: index,
         };
       }
       // 普通文本行
@@ -121,7 +117,7 @@ export default function TaskDetail({
         id: uuid(),
         title: line.trim(),
         completed: false,
-        sortOrder: index
+        sortOrder: index,
       };
     });
   };
@@ -130,14 +126,14 @@ export default function TaskDetail({
   const convertToMarkdown = (subtasks: SubTask[]): string => {
     return subtasks
       .sort((a, b) => a.sortOrder - b.sortOrder)
-      .map(st => `- [${st.completed ? "x" : " "}] ${st.title}`)
+      .map((st) => `- [${st.completed ? "x" : " "}] ${st.title}`)
       .join("\n");
   };
 
   // 切换模式
   const handleToggleMode = () => {
     if (!task) return;
-    
+
     if (!isSubtaskMode) {
       // 切换到子任务模式：将文本转换为子任务
       const subtasks = convertToSubtasks();
@@ -154,8 +150,8 @@ export default function TaskDetail({
   // 切换子任务完成状态
   const handleSubtaskToggle = (subtaskId: string, checked: boolean) => {
     if (!task) return;
-    const updatedItems = (task.items || []).map(item =>
-      item.id === subtaskId ? { ...item, completed: checked } : item
+    const updatedItems = (task.items || []).map((item) =>
+      item.id === subtaskId ? { ...item, completed: checked } : item,
     );
     onUpdateTask(task.id, { items: updatedItems });
   };
@@ -163,19 +159,18 @@ export default function TaskDetail({
   // 添加新子任务
   const handleAddSubtask = () => {
     if (!task || !newSubtaskTitle.trim()) return;
-    
+
     const currentItems = task.items || [];
-    const maxSortOrder = currentItems.length > 0 
-      ? Math.max(...currentItems.map(i => i.sortOrder)) 
-      : -1;
-    
+    const maxSortOrder =
+      currentItems.length > 0 ? Math.max(...currentItems.map((i) => i.sortOrder)) : -1;
+
     const newSubtask: SubTask = {
       id: uuid(),
       title: newSubtaskTitle.trim(),
       completed: false,
-      sortOrder: maxSortOrder + 1
+      sortOrder: maxSortOrder + 1,
     };
-    
+
     onUpdateTask(task.id, { items: [...currentItems, newSubtask] });
     setNewSubtaskTitle("");
   };
@@ -191,7 +186,7 @@ export default function TaskDetail({
   // 计算子任务完成进度
   const getSubtaskProgress = () => {
     if (!task?.items || task.items.length === 0) return null;
-    const completed = task.items.filter(i => i.completed).length;
+    const completed = task.items.filter((i) => i.completed).length;
     return { completed, total: task.items.length };
   };
 
@@ -209,7 +204,7 @@ export default function TaskDetail({
             className={cn(
               "transition-all duration-300",
               isExiting && "scale-110",
-              priorityConfig.borderColor
+              priorityConfig.borderColor,
             )}
           />
           <CalendarModal
@@ -231,36 +226,34 @@ export default function TaskDetail({
                     ? isOverdueInTz(task.startDate)
                       ? "text-red-500"
                       : "text-blue-500"
-                    : "text-muted-foreground"
+                    : "text-muted-foreground",
                 )}
               >
                 <CalendarIcon className="h-4 w-4 shrink-0" />
-                {task?.startDate ? getDateRangeLabel(task.startDate, task.dueDate) : '选择日期'}
+                {task?.startDate ? getDateRangeLabel(task.startDate, task.dueDate) : "选择日期"}
               </Button>
             }
           />
         </div>
         <div className="flex items-center gap-1">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className={cn(
-              "gap-1 text-outline",
-              isSubtaskMode && "bg-surface-variant"
-            )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn("gap-1 text-outline", isSubtaskMode && "bg-surface-variant")}
             onClick={handleToggleMode}
             disabled={!task}
             title={isSubtaskMode ? "切换到文本模式" : "切换到子任务模式"}
           >
-            {isSubtaskMode ? (
-              <List className="h-4 w-4" />
-            ) : (
-              <CheckSquare className="h-4 w-4" />
-            )}
+            {isSubtaskMode ? <List className="h-4 w-4" /> : <CheckSquare className="h-4 w-4" />}
           </Button>
           <Popover open={priorityOpen} onOpenChange={setPriorityOpen}>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="sm" className={cn("text-outline", priorityConfig.color)} disabled={!task}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={cn("text-outline", priorityConfig.color)}
+                disabled={!task}
+              >
                 <Flag className="h-4 w-4" />
               </Button>
             </PopoverTrigger>
@@ -275,7 +268,7 @@ export default function TaskDetail({
                       onClick={() => handlePriorityChange(level)}
                       className={cn(
                         "p-2 rounded hover:bg-surface-variant transition-colors",
-                        task?.priority === level && "bg-surface-variant"
+                        task?.priority === level && "bg-surface-variant",
                       )}
                       title={config.label}
                     >
@@ -289,20 +282,24 @@ export default function TaskDetail({
         </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col space-y-4 overflow-hidden">
-        <CardTitle className={cn(
-          "text-xl font-semibold transition-all duration-300",
-          completed && "line-through text-outline",
-          isExiting && "opacity-50"
-        )}>
+        <CardTitle
+          className={cn(
+            "text-xl font-semibold transition-all duration-300",
+            completed && "line-through text-outline",
+            isExiting && "opacity-50",
+          )}
+        >
           {task ? task.title : "请选择任务"}
         </CardTitle>
 
         {progress && (
           <div className="flex items-center gap-2 text-xs text-outline">
             <ListChecks className="h-4 w-4" />
-            <span>子任务进度: {progress.completed}/{progress.total}</span>
+            <span>
+              子任务进度: {progress.completed}/{progress.total}
+            </span>
             <div className="flex-1 h-1.5 bg-surface-variant rounded-full overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-primary transition-all duration-300"
                 style={{ width: `${(progress.completed / progress.total) * 100}%` }}
               />
@@ -318,23 +315,27 @@ export default function TaskDetail({
           ) : isSubtaskMode ? (
             // 子任务列表模式
             <div className="space-y-1">
-              {(task.items || []).sort((a, b) => a.sortOrder - b.sortOrder).map((subtask) => (
-                <div 
-                  key={subtask.id}
-                  className="flex items-center gap-3 p-2 rounded hover:bg-surface-variant transition-colors"
-                >
-                  <Checkbox
-                    checked={subtask.completed}
-                    onCheckedChange={(checked) => handleSubtaskToggle(subtask.id, !!checked)}
-                  />
-                  <span className={cn(
-                    "text-sm flex-1",
-                    subtask.completed && "line-through text-outline"
-                  )}>
-                    {subtask.title}
-                  </span>
-                </div>
-              ))}
+              {(task.items || [])
+                .sort((a, b) => a.sortOrder - b.sortOrder)
+                .map((subtask) => (
+                  <div
+                    key={subtask.id}
+                    className="flex items-center gap-3 p-2 rounded hover:bg-surface-variant transition-colors"
+                  >
+                    <Checkbox
+                      checked={subtask.completed}
+                      onCheckedChange={(checked) => handleSubtaskToggle(subtask.id, !!checked)}
+                    />
+                    <span
+                      className={cn(
+                        "text-sm flex-1",
+                        subtask.completed && "line-through text-outline",
+                      )}
+                    >
+                      {subtask.title}
+                    </span>
+                  </div>
+                ))}
               {/* 新子任务输入框 */}
               <div className="flex items-center gap-3 p-2">
                 <Plus className="h-4 w-4 text-outline" />
@@ -356,9 +357,18 @@ export default function TaskDetail({
               language="zh-CN"
               preview={false}
               toolbars={[
-                "bold", "italic", "strikeThrough", "-",
-                "unorderedList", "orderedList", "task", "-",
-                "link", "image", "code", "codeRow"
+                "bold",
+                "italic",
+                "strikeThrough",
+                "-",
+                "unorderedList",
+                "orderedList",
+                "task",
+                "-",
+                "link",
+                "image",
+                "code",
+                "codeRow",
               ]}
               style={{ height: "100%" }}
               placeholder="在此输入任务描述...每行文本可转换为子任务"

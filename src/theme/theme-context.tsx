@@ -13,7 +13,9 @@ export const DEFAULT_THEME_ID = "default";
 export const THEME_STORAGE_KEY = "tickclone.theme";
 
 export function resolvePreset(id: string | null | undefined): ThemePreset {
-  return themePresets.find((p) => p.id === id) ?? themePresets.find((p) => p.id === DEFAULT_THEME_ID)!;
+  return (
+    themePresets.find((p) => p.id === id) ?? themePresets.find((p) => p.id === DEFAULT_THEME_ID)!
+  );
 }
 
 export function readStoredTheme(storage: Pick<Storage, "getItem"> | null): string {
@@ -26,9 +28,8 @@ export function applyTheme(preset: ThemePreset) {
   style.setProperty("--theme-primary", preset.color);
   style.setProperty("--theme-aside-bg", preset.asideBg ?? preset.color);
   style.setProperty("--theme-input-border", preset.inputBorder ?? preset.color);
-  style.setProperty("--theme-sidebar-bg", preset.sidebarBg ?? preset.color)
+  style.setProperty("--theme-sidebar-bg", preset.sidebarBg ?? preset.color);
   style.setProperty("--theme-sidebar-item-active", preset.sidebarItemActive ?? preset.color);
-  
 }
 
 type ThemeProviderProps = { children: React.ReactNode };
@@ -52,9 +53,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     () => ({
       preset,
       presets: themePresets,
-      setTheme: setActiveId
+      setTheme: setActiveId,
     }),
-    [preset]
+    [preset],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

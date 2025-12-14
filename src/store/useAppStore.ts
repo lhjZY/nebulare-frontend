@@ -23,6 +23,6 @@ export const useAppStore = create<AppState>((set) => ({
   setSelectedTask: (id) => set({ selectedTaskId: id }),
   setSyncState: (state) =>
     set((s) => ({
-      syncState: { ...s.syncState, ...state }
-    }))
+      syncState: { ...s.syncState, ...state },
+    })),
 }));

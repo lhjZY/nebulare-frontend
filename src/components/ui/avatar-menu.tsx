@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@/api/auth";
-import {Palette,LogOut } from 'lucide-react'
+import { Palette, LogOut } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "./avatar";
-import defaultImage from '@/assets/avatar.jpeg'
+import defaultImage from "@/assets/avatar.jpeg";
 type AvatarMenuProps = {
   onOpenThemeDialog?: () => void;
 };
@@ -16,13 +16,13 @@ export default function AvatarMenu({ onOpenThemeDialog }: AvatarMenuProps) {
   // 点击外部区域关闭弹窗
   React.useEffect(() => {
     if (!open) return;
-    
+
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     };
-    
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
@@ -35,8 +35,10 @@ export default function AvatarMenu({ onOpenThemeDialog }: AvatarMenuProps) {
 
   return (
     <div ref={containerRef} className="relative">
-      <Avatar onClick={() => setOpen((v) => !v)}
-        className="h-10 w-10 rounded-full grid place-items-center text-lg hover:opacity-90">
+      <Avatar
+        onClick={() => setOpen((v) => !v)}
+        className="h-10 w-10 rounded-full grid place-items-center text-lg hover:opacity-90"
+      >
         <AvatarImage src={defaultImage} />
         <AvatarFallback>N</AvatarFallback>
       </Avatar>
