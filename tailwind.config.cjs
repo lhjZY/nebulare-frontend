@@ -23,7 +23,7 @@ module.exports = {
         surface: "#f0f2f5",
         "surface-variant": "#e1e3e6",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "rgba(var(--color-primary), <alpha-value>)",
           foreground: "hsl(var(--primary-foreground))",
         },
         "on-primary": "#001d35",

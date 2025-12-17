@@ -10,27 +10,6 @@
   If we ever want to remove these styles, we need to add an explicit border
   color utility to any element that depends on these defaults.
 */
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
-}
-
-@layer utilities {
-  body {
-    font-family:
-      "Roboto",
-      system-ui,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      sans-serif;
-  }
-}
 
 @layer base {
   /* 通用变量 - 所有主题共享 */
@@ -49,7 +28,7 @@
     --main-background-color: #fff;
   }
 
-  /* ========== 主题变量定义（使用旧版主题系统）========== */
+ 
   [data-theme="blue-gradient-theme"] {
     --color-primary: 71, 114, 250;
     --opacity-variant-primary-2: 0.02;
@@ -354,10 +333,35 @@
     --opacity-variant-gradient-to-color-24: 0.24;
     --opacity-variant-gradient-to-color-30: 0.3;
     --opacity-variant-gradient-to-color-40: 0.4;
+    --project-list-opacity: var(--opacity-variant-gradient-from-color-6);
   }
+
+  [data-theme=turquoise-gradient-theme] {
+    --primary-color: #1dc19d;
+    --primary-hover-color: #4acdb1;
+    --primary-active-color: #1c9f83;
+    --primary-disable-color: #a5e6d8;
+}
 
   [data-theme="turquoise-gradient-theme"] {
     --color-primary: 29, 193, 157;
+    --opacity-variant-primary-2: 0.02;
+    --opacity-variant-primary-3: 0.03;
+    --opacity-variant-primary-4: 0.04;
+    --opacity-variant-primary-5: 0.05;
+    --opacity-variant-primary-6: 0.06;
+    --opacity-variant-primary-8: 0.08;
+    --opacity-variant-primary-10: 0.1;
+    --opacity-variant-primary-12: 0.12;
+    --opacity-variant-primary-15: 0.15;
+    --opacity-variant-primary-20: 0.2;
+    --opacity-variant-primary-30: 0.3;
+    --opacity-variant-primary-40: 0.4;
+    --opacity-variant-primary-50: 0.5;
+    --opacity-variant-primary-60: 0.6;
+    --opacity-variant-primary-70: 0.7;
+    --opacity-variant-primary-80: 0.8;
+    --opacity-variant-primary-90: 0.9;
     --color-grey: 25, 25, 25;
     --color-gallery: 238, 238, 238;
     --color-main-background: 255, 255, 255;
@@ -402,13 +406,385 @@
     --color-gradient-from-color: 30, 188, 153;
     --color-gradient-to-color: 85, 211, 183;
   }
+
+  [data-theme=turquoise-gradient-theme], [data-theme=lilac-gradient-theme] {
+    --opacity-variant-primary-2: 0.02;
+    --opacity-variant-primary-3: 0.03;
+    --opacity-variant-primary-4: 0.04;
+    --opacity-variant-primary-5: 0.05;
+    --opacity-variant-primary-6: 0.06;
+    --opacity-variant-primary-8: 0.08;
+    --opacity-variant-primary-10: 0.1;
+    --opacity-variant-primary-12: 0.12;
+    --opacity-variant-primary-15: 0.15;
+    --opacity-variant-primary-20: 0.2;
+    --opacity-variant-primary-30: 0.3;
+    --opacity-variant-primary-40: 0.4;
+    --opacity-variant-primary-50: 0.5;
+    --opacity-variant-primary-60: 0.6;
+    --opacity-variant-primary-70: 0.7;
+    --opacity-variant-primary-80: 0.8;
+    --opacity-variant-primary-90: 0.9;
+    --opacity-variant-grey-1: 0.01;
+    --opacity-variant-grey-2: 0.02;
+    --opacity-variant-grey-3: 0.03;
+    --opacity-variant-grey-4: 0.04;
+    --opacity-variant-grey-5: 0.05;
+    --opacity-variant-grey-6: 0.06;
+    --opacity-variant-grey-8: 0.08;
+    --opacity-variant-grey-10: 0.1;
+    --opacity-variant-grey-12: 0.12;
+    --opacity-variant-grey-13: 0.13;
+    --opacity-variant-grey-15: 0.15;
+    --opacity-variant-grey-20: 0.2;
+    --opacity-variant-grey-25: 0.25;
+    --opacity-variant-grey-30: 0.3;
+    --opacity-variant-grey-40: 0.4;
+    --opacity-variant-grey-50: 0.5;
+    --opacity-variant-grey-60: 0.6;
+    --opacity-variant-grey-70: 0.7;
+    --opacity-variant-grey-80: 0.8;
+    --opacity-variant-grey-85: 0.85;
+    --opacity-variant-grey-90: 0.9;
+    --opacity-variant-gallery-3: 0.03;
+    --opacity-variant-gallery-5: 0.05;
+    --opacity-variant-gallery-10: 0.1;
+    --opacity-variant-gallery-20: 0.2;
+    --opacity-variant-gallery-30: 0.3;
+    --opacity-variant-gallery-40: 0.4;
+    --opacity-variant-gallery-50: 0.5;
+    --opacity-variant-gallery-60: 0.6;
+    --opacity-variant-gallery-70: 0.7;
+    --opacity-variant-gallery-80: 0.8;
+    --opacity-variant-gallery-90: 0.9;
+    --opacity-variant-main-background-3: 0.03;
+    --opacity-variant-main-background-5: 0.05;
+    --opacity-variant-main-background-10: 0.1;
+    --opacity-variant-main-background-20: 0.2;
+    --opacity-variant-main-background-30: 0.3;
+    --opacity-variant-main-background-40: 0.4;
+    --opacity-variant-main-background-50: 0.5;
+    --opacity-variant-main-background-60: 0.6;
+    --opacity-variant-main-background-70: 0.7;
+    --opacity-variant-main-background-80: 0.8;
+    --opacity-variant-main-background-90: 0.9;
+    --opacity-variant-primary-front-3: 0.03;
+    --opacity-variant-primary-front-5: 0.05;
+    --opacity-variant-primary-front-10: 0.1;
+    --opacity-variant-primary-front-20: 0.2;
+    --opacity-variant-primary-front-30: 0.3;
+    --opacity-variant-primary-front-40: 0.4;
+    --opacity-variant-primary-front-50: 0.5;
+    --opacity-variant-primary-front-60: 0.6;
+    --opacity-variant-primary-front-70: 0.7;
+    --opacity-variant-primary-front-80: 0.8;
+    --opacity-variant-primary-front-90: 0.9;
+    --opacity-variant-summer-bg-3: 0.03;
+    --opacity-variant-summer-bg-5: 0.05;
+    --opacity-variant-summer-bg-10: 0.1;
+    --opacity-variant-summer-bg-20: 0.2;
+    --opacity-variant-summer-bg-30: 0.3;
+    --opacity-variant-summer-bg-40: 0.4;
+    --opacity-variant-summer-bg-50: 0.5;
+    --opacity-variant-summer-bg-60: 0.6;
+    --opacity-variant-summer-bg-70: 0.7;
+    --opacity-variant-summer-bg-80: 0.8;
+    --opacity-variant-summer-bg-90: 0.9;
+    --opacity-variant-card-bg-3: 0.03;
+    --opacity-variant-card-bg-5: 0.05;
+    --opacity-variant-card-bg-10: 0.1;
+    --opacity-variant-card-bg-20: 0.2;
+    --opacity-variant-card-bg-30: 0.3;
+    --opacity-variant-card-bg-40: 0.4;
+    --opacity-variant-card-bg-50: 0.5;
+    --opacity-variant-card-bg-60: 0.6;
+    --opacity-variant-card-bg-70: 0.7;
+    --opacity-variant-card-bg-80: 0.8;
+    --opacity-variant-card-bg-90: 0.9;
+    --opacity-variant-dark-card-bg-3: 0.03;
+    --opacity-variant-dark-card-bg-5: 0.05;
+    --opacity-variant-dark-card-bg-10: 0.1;
+    --opacity-variant-dark-card-bg-20: 0.2;
+    --opacity-variant-dark-card-bg-30: 0.3;
+    --opacity-variant-dark-card-bg-40: 0.4;
+    --opacity-variant-dark-card-bg-50: 0.5;
+    --opacity-variant-dark-card-bg-60: 0.6;
+    --opacity-variant-dark-card-bg-70: 0.7;
+    --opacity-variant-dark-card-bg-80: 0.8;
+    --opacity-variant-dark-card-bg-90: 0.9;
+    --opacity-variant-white-3: 0.03;
+    --opacity-variant-white-4: 0.04;
+    --opacity-variant-white-5: 0.05;
+    --opacity-variant-white-10: 0.1;
+    --opacity-variant-white-15: 0.15;
+    --opacity-variant-white-20: 0.2;
+    --opacity-variant-white-30: 0.3;
+    --opacity-variant-white-40: 0.4;
+    --opacity-variant-white-50: 0.5;
+    --opacity-variant-white-60: 0.6;
+    --opacity-variant-white-70: 0.7;
+    --opacity-variant-white-80: 0.8;
+    --opacity-variant-white-90: 0.9;
+    --opacity-variant-black-3: 0.03;
+    --opacity-variant-black-5: 0.05;
+    --opacity-variant-black-10: 0.1;
+    --opacity-variant-black-20: 0.2;
+    --opacity-variant-black-30: 0.3;
+    --opacity-variant-black-40: 0.4;
+    --opacity-variant-black-50: 0.5;
+    --opacity-variant-black-60: 0.6;
+    --opacity-variant-black-70: 0.7;
+    --opacity-variant-black-80: 0.8;
+    --opacity-variant-black-90: 0.9;
+    --opacity-variant-priority-low-3: 0.03;
+    --opacity-variant-priority-low-5: 0.05;
+    --opacity-variant-priority-low-10: 0.1;
+    --opacity-variant-priority-low-20: 0.2;
+    --opacity-variant-priority-low-30: 0.3;
+    --opacity-variant-priority-low-40: 0.4;
+    --opacity-variant-priority-low-50: 0.5;
+    --opacity-variant-priority-low-60: 0.6;
+    --opacity-variant-priority-low-70: 0.7;
+    --opacity-variant-priority-low-80: 0.8;
+    --opacity-variant-priority-low-90: 0.9;
+    --opacity-variant-priority-medium-3: 0.03;
+    --opacity-variant-priority-medium-5: 0.05;
+    --opacity-variant-priority-medium-10: 0.1;
+    --opacity-variant-priority-medium-20: 0.2;
+    --opacity-variant-priority-medium-30: 0.3;
+    --opacity-variant-priority-medium-40: 0.4;
+    --opacity-variant-priority-medium-50: 0.5;
+    --opacity-variant-priority-medium-60: 0.6;
+    --opacity-variant-priority-medium-70: 0.7;
+    --opacity-variant-priority-medium-80: 0.8;
+    --opacity-variant-priority-medium-90: 0.9;
+    --opacity-variant-priority-high-3: 0.03;
+    --opacity-variant-priority-high-5: 0.05;
+    --opacity-variant-priority-high-10: 0.1;
+    --opacity-variant-priority-high-20: 0.2;
+    --opacity-variant-priority-high-30: 0.3;
+    --opacity-variant-priority-high-40: 0.4;
+    --opacity-variant-priority-high-50: 0.5;
+    --opacity-variant-priority-high-60: 0.6;
+    --opacity-variant-priority-high-70: 0.7;
+    --opacity-variant-priority-high-80: 0.8;
+    --opacity-variant-priority-high-90: 0.9;
+    --opacity-variant-min-cal-color-3: 0.03;
+    --opacity-variant-min-cal-color-5: 0.05;
+    --opacity-variant-min-cal-color-10: 0.1;
+    --opacity-variant-min-cal-color-20: 0.2;
+    --opacity-variant-min-cal-color-30: 0.3;
+    --opacity-variant-min-cal-color-40: 0.4;
+    --opacity-variant-min-cal-color-50: 0.5;
+    --opacity-variant-min-cal-color-60: 0.6;
+    --opacity-variant-min-cal-color-70: 0.7;
+    --opacity-variant-min-cal-color-80: 0.8;
+    --opacity-variant-min-cal-color-90: 0.9;
+    --opacity-variant-sidebar-color-3: 0.03;
+    --opacity-variant-sidebar-color-5: 0.05;
+    --opacity-variant-sidebar-color-10: 0.1;
+    --opacity-variant-sidebar-color-20: 0.2;
+    --opacity-variant-sidebar-color-30: 0.3;
+    --opacity-variant-sidebar-color-40: 0.4;
+    --opacity-variant-sidebar-color-50: 0.5;
+    --opacity-variant-sidebar-color-60: 0.6;
+    --opacity-variant-sidebar-color-70: 0.7;
+    --opacity-variant-sidebar-color-80: 0.8;
+    --opacity-variant-sidebar-color-90: 0.9;
+    --opacity-variant-sidebar-icon-number-color-3: 0.03;
+    --opacity-variant-sidebar-icon-number-color-5: 0.05;
+    --opacity-variant-sidebar-icon-number-color-10: 0.1;
+    --opacity-variant-sidebar-icon-number-color-20: 0.2;
+    --opacity-variant-sidebar-icon-number-color-30: 0.3;
+    --opacity-variant-sidebar-icon-number-color-40: 0.4;
+    --opacity-variant-sidebar-icon-number-color-50: 0.5;
+    --opacity-variant-sidebar-icon-number-color-60: 0.6;
+    --opacity-variant-sidebar-icon-number-color-70: 0.7;
+    --opacity-variant-sidebar-icon-number-color-80: 0.8;
+    --opacity-variant-sidebar-icon-number-color-90: 0.9;
+    --opacity-variant-left-sidebar-color-3: 0.03;
+    --opacity-variant-left-sidebar-color-5: 0.05;
+    --opacity-variant-left-sidebar-color-10: 0.1;
+    --opacity-variant-left-sidebar-color-20: 0.2;
+    --opacity-variant-left-sidebar-color-30: 0.3;
+    --opacity-variant-left-sidebar-color-40: 0.4;
+    --opacity-variant-left-sidebar-color-50: 0.5;
+    --opacity-variant-left-sidebar-color-60: 0.6;
+    --opacity-variant-left-sidebar-color-70: 0.7;
+    --opacity-variant-left-sidebar-color-80: 0.8;
+    --opacity-variant-left-sidebar-color-90: 0.9;
+    --opacity-variant-sidebar-bg-color-3: 0.03;
+    --opacity-variant-sidebar-bg-color-5: 0.05;
+    --opacity-variant-sidebar-bg-color-10: 0.1;
+    --opacity-variant-sidebar-bg-color-20: 0.2;
+    --opacity-variant-sidebar-bg-color-30: 0.3;
+    --opacity-variant-sidebar-bg-color-40: 0.4;
+    --opacity-variant-sidebar-bg-color-50: 0.5;
+    --opacity-variant-sidebar-bg-color-60: 0.6;
+    --opacity-variant-sidebar-bg-color-70: 0.7;
+    --opacity-variant-sidebar-bg-color-80: 0.8;
+    --opacity-variant-sidebar-bg-color-90: 0.9;
+    --opacity-variant-left-sidebar-bg-color-3: 0.03;
+    --opacity-variant-left-sidebar-bg-color-5: 0.05;
+    --opacity-variant-left-sidebar-bg-color-8: 0.08;
+    --opacity-variant-left-sidebar-bg-color-10: 0.1;
+    --opacity-variant-left-sidebar-bg-color-20: 0.2;
+    --opacity-variant-left-sidebar-bg-color-30: 0.3;
+    --opacity-variant-left-sidebar-bg-color-40: 0.4;
+    --opacity-variant-left-sidebar-bg-color-50: 0.5;
+    --opacity-variant-left-sidebar-bg-color-60: 0.6;
+    --opacity-variant-left-sidebar-bg-color-70: 0.7;
+    --opacity-variant-left-sidebar-bg-color-80: 0.8;
+    --opacity-variant-left-sidebar-bg-color-90: 0.9;
+    --opacity-variant-dark-red-10: 0.1;
+    --opacity-variant-brand-primary-10: 0.1;
+    --opacity-variant-brand-primary-20: 0.2;
+    --opacity-variant-brand-primary-80: 0.8;
+    --opacity-variant-brand-secondary-20: 0.2;
+    --opacity-variant-brand-black-70: 0.7;
+    --opacity-variant-warn-red-3: 0.03;
+    --opacity-variant-screen-background-60: 0.6;
+    --opacity-variant-pro-10: 0.1;
+    --opacity-variant-pro-90: 0.9;
+    --opacity-variant-menu-primary-10: 0.1;
+    --opacity-variant-gradient-from-color-2: 0.02;
+    --opacity-variant-gradient-from-color-3: 0.03;
+    --opacity-variant-gradient-from-color-4: 0.04;
+    --opacity-variant-gradient-from-color-6: 0.06;
+    --opacity-variant-gradient-from-color-8: 0.08;
+    --opacity-variant-gradient-from-color-10: 0.1;
+    --opacity-variant-gradient-from-color-15: 0.15;
+    --opacity-variant-gradient-from-color-24: 0.24;
+    --opacity-variant-gradient-from-color-30: 0.3;
+    --opacity-variant-gradient-from-color-40: 0.4;
+    --opacity-variant-gradient-to-color-2: 0.02;
+    --opacity-variant-gradient-to-color-3: 0.03;
+    --opacity-variant-gradient-to-color-4: 0.04;
+    --opacity-variant-gradient-to-color-6: 0.06;
+    --opacity-variant-gradient-to-color-8: 0.08;
+    --opacity-variant-gradient-to-color-10: 0.1;
+    --opacity-variant-gradient-to-color-15: 0.15;
+    --opacity-variant-gradient-to-color-24: 0.24;
+    --opacity-variant-gradient-to-color-30: 0.3;
+    --opacity-variant-gradient-to-color-40: 0.4;
+    --project-list-opacity: var(--opacity-variant-gradient-from-color-15);
 }
 
-@layer base {
-  * {
-    @apply border-border;
+  [data-theme=lilac-gradient-theme] {
+    --primary-color: #8672d3;
+    --primary-hover-color: #9e8edc;
+    --primary-active-color: #7060ae;
+    --primary-disable-color: #cfc7ed;
+}
+
+[data-theme=lilac-gradient-theme] {
+    --color-primary: 134,114,211;
+    --color-grey: 25,25,25;
+    --color-gallery: 238,238,238;
+    --color-main-background: 255,255,255;
+    --color-primary-front: 0,0,0;
+    --color-summer-bg: 5,93,116;
+    --color-card-bg: 250,250,250;
+    --color-dark-card-bg: 30,30,30;
+    --color-white: 255,255,255;
+    --color-black: 0,0,0;
+    --color-priority-low: 71,114,250;
+    --color-priority-medium: 250,168,12;
+    --color-priority-high: 225,62,57;
+    --color-min-cal-color: 255,255,255;
+    --color-sidebar-color: 40,21,55;
+    --color-sidebar-icon-number-color: 242,245,254;
+    --color-left-sidebar-color: 255,255,255;
+    --color-sidebar-bg-color: 242,245,254;
+    --color-left-sidebar-bg-color: 249,249,249;
+    --color-orange: 255,89,0;
+    --color-green: 12,206,156;
+    --color-turquoise: 16,195,238;
+    --color-dark-red: 224,49,49;
+    --color-brand-primary: 71,114,250;
+    --color-brand-secondary: 255,176,0;
+    --color-brand-black: 25,25,25;
+    --color-warn-red: 224,49,49;
+    --color-highlight: 251,193,64;
+    --color-highlight-sub: 242,217,162;
+    --color-team-orange: 251,129,66;
+    --color-team-orange-active: 206,108,58;
+    --color-team-orange-hover: 252,154,104;
+    --color-team-orange-disable: 253,205,179;
+    --color-cancel-btn-hover: 244,244,244;
+    --color-cancel-btn-active: 232,232,232;
+    --color-screen-background: 255,255,255;
+    --color-light-black: 51,51,51;
+    --color-pro: 255,142,10;
+    --color-btn-active-color: 112,96,174;
+    --color-btn-hover-color: 158,142,220;
+    --color-btn-disable-color: 207,199,237;
+    --color-menu-primary: 134,114,211;
+    --color-gradient-from-color: 144,154,231;
+    --color-gradient-to-color: 229,197,235;
+}
+
+  .project-list-scroller {
+    background-image: linear-gradient(180deg, rgba(var(--color-gradient-from-color), var(--project-list-opacity)), rgba(var(--color-gradient-to-color), var(--project-list-opacity)));
+    
   }
-  body {
-    @apply bg-background text-foreground;
+  .bg-grey-3 {
+      background-color: rgba(var(--color-grey),var(--opacity-variant-grey-3));
+  }
+
+  .bg-primary-12 {
+    background-color: rgba(var(--color-primary),var(--opacity-variant-primary-12));
+  }
+
+  .border-primary {
+    border-color: rgba(var(--color-primary),1);
+  }
+}
+
+@layer utilities {
+  .hover\:bg-primary-8:hover {
+    background-color: rgba(var(--color-primary),var(--opacity-variant-primary-8));
+  }
+}
+
+@layer utilities {
+  /* Custom Scrollbar Utility */
+  .hover-scroll {
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  
+  .hover-scroll:hover {
+    scrollbar-color: rgba(0, 0, 0, 0.4) transparent;
+  }
+  
+  .hover-scroll::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .hover-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .hover-scroll::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 9999px;
+  }
+  
+  .hover-scroll:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  /* Dark mode support for scrollbar thumb */
+  @media (prefers-color-scheme: dark) {
+    .hover-scroll:hover {
+      scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+    }
+    .hover-scroll:hover::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
   }
 }

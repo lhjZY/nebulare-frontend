@@ -159,7 +159,7 @@ const TaskColumn = React.memo(
               onBlur={() => setInputFocused(false)}
               ref={inputRef}
               className={cn(
-                "focus-visible:ring-offset-1 mt-1 w-full pr-[170px] transition-colors border-(--theme-input-border) focus-visible:border-(--theme-input-border) focus-visible:ring-(--theme-input-border)",
+                "mt-1 w-full border border-solid rounded-default border-transparent bg-grey-3 pr-[170px] transition-colors focus:border-primary focus:outline-none",
                 !inputFocused && isInputEmpty ? "bg-gray-100" : "bg-white",
               )}
             />
@@ -196,7 +196,7 @@ const TaskColumn = React.memo(
             </div>
           </form>
         </CardHeader>
-        <CardContent className="flex-1 overflow-auto space-y-4">
+        <CardContent className="hover-scroll flex-1 space-y-4">
           {isSyncing && <p className="text-xs text-outline">同步中...</p>}
           {lastError && <p className="text-xs text-red-500">同步失败: {lastError}</p>}
           <Accordion

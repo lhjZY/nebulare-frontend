@@ -8,6 +8,7 @@ export type ThemePreset = {
 export const themePresets: ThemePreset[] = [
   { id: "blue-gradient-theme", name: "蓝色渐变" },
   { id: "turquoise-gradient-theme", name: "绿松石渐变" },
+  { id: "lilac-gradient-theme", name: "丁香紫渐变" },
 ];
 
 /** 从 CSS 变量获取主题主色调（用于预览） */
