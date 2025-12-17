@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/sparklesColor.svg" />
     <title>nebula-工作流</title>
+    
+    <!-- 主题初始化脚本：防止闪烁（FOUC） -->
+    <script>
+      (function() {
+        try {
+          const THEME_KEY = 'tickclone.theme';
+          const DEFAULT_THEME = 'blue-gradient-theme';
+          const storedTheme = localStorage.getItem(THEME_KEY) || DEFAULT_THEME;
+          document.documentElement.setAttribute('data-theme', storedTheme);
+        } catch (e) {
+          // localStorage 不可用时使用默认主题
+          document.documentElement.setAttribute('data-theme', 'blue-gradient-theme');
+        }
+      })();
+    </script>
   </head>
   <body class="bg-surface text-on-surface">
     <div id="root"></div>

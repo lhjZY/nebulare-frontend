@@ -37,13 +37,18 @@ export default function AvatarMenu({ onOpenThemeDialog }: AvatarMenuProps) {
     <div ref={containerRef} className="relative">
       <Avatar
         onClick={() => setOpen((v) => !v)}
-        className="h-10 w-10 rounded-full grid place-items-center text-lg hover:opacity-90"
+        className="h-10 w-10 rounded-full grid place-items-center text-lg hover:opacity-90 cursor-pointer"
       >
         <AvatarImage src={defaultImage} />
         <AvatarFallback>N</AvatarFallback>
       </Avatar>
       {open ? (
-        <div className="absolute left-12 top-0 z-50 w-40 rounded-xl border border-outline/20 bg-white shadow-md">
+        <div
+          className="absolute left-12 top-0 z-50 w-40 rounded-xl border border-outline/20 bg-white shadow-md"
+          style={{
+            backgroundColor: "rgba(var(--color-main-background),1)",
+          }}
+        >
           <button
             className="w-full px-4 py-3 text-left text-sm hover:bg-surface-variant flex items-center justify-start"
             onClick={() => {

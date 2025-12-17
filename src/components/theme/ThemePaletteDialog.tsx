@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -8,7 +9,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useTheme } from "@/theme/theme-context";
+import { useTheme, DEFAULT_THEME_ID } from "@/theme/theme-context";
+import { getThemeColor } from "@/theme/presets";
 import { cn } from "@/lib/utils";
 
 type ThemePaletteDialogProps = {
@@ -17,7 +19,19 @@ type ThemePaletteDialogProps = {
 };
 
 export function ThemePaletteDialog({ open, onOpenChange }: ThemePaletteDialogProps) {
-  const { preset, presets, setTheme } = useTheme();
+  const { themeId, presets, setTheme } = useTheme();
+  const [colors, setColors] = useState<Record<string, string>>({});
+
+  // 当对话框打开时，从 CSS 变量读取每个主题的预览色
+  useEffect(() => {
+    if (open) {
+      const colorMap: Record<string, string> = {};
+      presets.forEach((p) => {
+        colorMap[p.id] = getThemeColor(p.id);
+      });
+      setColors(colorMap);
+    }
+  }, [open, presets]);
 
   const handleSelect = (id: string) => {
     setTheme(id);
@@ -33,7 +47,8 @@ export function ThemePaletteDialog({ open, onOpenChange }: ThemePaletteDialogPro
         </AlertDialogHeader>
         <div role="radiogroup" className="grid grid-cols-3 gap-4 md:grid-cols-4">
           {presets.map((item) => {
-            const active = item.id === preset.id;
+            const active = item.id === themeId;
+            const previewColor = colors[item.id] || "rgb(71, 114, 250)";
             return (
               <button
                 key={item.id}
@@ -48,7 +63,7 @@ export function ThemePaletteDialog({ open, onOpenChange }: ThemePaletteDialogPro
                     "relative h-14 w-14 rounded-xl border border-outline/30 bg-white shadow-xs ring-offset-2 transition hover:shadow-md",
                     active ? "ring-2 ring-(--theme-primary)" : "ring-1 ring-transparent",
                   )}
-                  style={{ background: item.asideBg ?? item.color }}
+                  style={{ background: previewColor }}
                 >
                   {active ? (
                     <span className="absolute -right-2 -bottom-2 grid h-6 w-6 place-items-center rounded-full bg-white text-(--theme-primary) shadow-sm ring-1 ring-outline/20">
@@ -65,7 +80,7 @@ export function ThemePaletteDialog({ open, onOpenChange }: ThemePaletteDialogPro
           <AlertDialogCancel onClick={() => onOpenChange(false)}>关闭</AlertDialogCancel>
           <button
             type="button"
-            onClick={() => handleSelect("default")}
+            onClick={() => handleSelect(DEFAULT_THEME_ID)}
             className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-on-surface hover:bg-surface-variant"
           >
             恢复默认

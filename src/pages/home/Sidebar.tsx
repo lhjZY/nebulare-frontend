@@ -178,7 +178,13 @@ export default function Sidebar({
 
   return (
     <>
-      <Card className="flex h-full flex-col bg-(--theme-sidebar-bg) pt-5">
+      <Card
+        className="flex h-full flex-col pt-5"
+        style={{
+          backgroundImage:
+            "linear-gradient(180deg, rgba(var(--color-gradient-from-color), var(--opacity-variant-gradient-from-color-6)), rgba(var(--color-gradient-to-color), var(--opacity-variant-gradient-from-color-6)))",
+        }}
+      >
         <CardContent className="flex-1 overflow-auto pt-0 space-y-4">
           <Section>
             {smartLists.map((item) => (
@@ -305,7 +311,7 @@ function SidebarItem({
     <div
       onClick={onClick}
       className={cn(
-        "flex w-full gap-2 items-center rounded px-3 py-3 text-sm transition",
+        "flex w-full gap-2 items-center rounded px-3 py-3 text-sm transition bg-primary-12 drop-hover-effect",
         active
           ? "bg-(--theme-sidebar-item-active) text-on-primary"
           : "text-[#444746] hover:bg-surface-variant",

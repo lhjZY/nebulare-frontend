@@ -167,6 +167,18 @@ export default function HomePage() {
     syncNow();
   };
 
+  const handleDeleteTask = async (id: string) => {
+    await db.tasks.update(id, {
+      isDeleted: true,
+      syncStatus: "deleted",
+      modifiedTime: Date.now(),
+    });
+    if (selectedTaskId === id) {
+      setSelectedTask(null);
+    }
+    syncNow();
+  };
+
   const handleUpdatePriority = async (taskId: string, priority: number) => {
     await db.tasks.update(taskId, {
       priority,
@@ -218,20 +230,12 @@ export default function HomePage() {
           onChangeStartDate={setNewStartDate}
           newDueDate={newDueDate}
           onChangeDueDate={setNewDueDate}
-          onSubmit={handleAdd}
+          onSubmit={(e) => {
+            void handleAdd(e);
+          }}
           isSyncing={syncState.isSyncing}
           lastError={syncState.lastError}
-          onDeleteTask={async (id) => {
-            await db.tasks.update(id, {
-              isDeleted: true,
-              syncStatus: "deleted",
-              modifiedTime: Date.now(),
-            });
-            if (selectedTaskId === id) {
-              setSelectedTask(null);
-            }
-            syncNow();
-          }}
+          onDeleteTask={handleDeleteTask}
           onToggleComplete={handleToggleComplete}
           onUpdatePriority={handleUpdatePriority}
           onUpdateTask={handleUpdateTask}

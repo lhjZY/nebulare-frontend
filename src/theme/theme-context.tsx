@@ -2,60 +2,64 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from "
 import { themePresets, ThemePreset } from "./presets";
 
 type ThemeContextValue = {
-  preset: ThemePreset;
+  themeId: string;
   presets: ThemePreset[];
   setTheme: (id: string) => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-export const DEFAULT_THEME_ID = "default";
+export const DEFAULT_THEME_ID = "blue-gradient-theme";
 export const THEME_STORAGE_KEY = "tickclone.theme";
-
-export function resolvePreset(id: string | null | undefined): ThemePreset {
-  return (
-    themePresets.find((p) => p.id === id) ?? themePresets.find((p) => p.id === DEFAULT_THEME_ID)!
-  );
-}
 
 export function readStoredTheme(storage: Pick<Storage, "getItem"> | null): string {
   const stored = storage?.getItem(THEME_STORAGE_KEY);
   return stored ?? DEFAULT_THEME_ID;
 }
 
-export function applyTheme(preset: ThemePreset) {
-  const style = document.documentElement.style;
-  style.setProperty("--theme-primary", preset.color);
-  style.setProperty("--theme-aside-bg", preset.asideBg ?? preset.color);
-  style.setProperty("--theme-input-border", preset.inputBorder ?? preset.color);
-  style.setProperty("--theme-sidebar-bg", preset.sidebarBg ?? preset.color);
-  style.setProperty("--theme-sidebar-item-active", preset.sidebarItemActive ?? preset.color);
+export function applyTheme(themeId: string) {
+  // 设置 data-theme 属性，触发 CSS 中对应的主题变量
+  document.documentElement.dataset.theme = themeId;
+
+  // 添加过渡效果，使主题切换更平滑
+  document.documentElement.style.transition = "background-color 0.3s ease, color 0.3s ease";
 }
 
 type ThemeProviderProps = { children: React.ReactNode };
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [activeId, setActiveId] = useState<string>(() => {
+  const [themeId, setThemeId] = useState<string>(() => {
     if (typeof window === "undefined") return DEFAULT_THEME_ID;
-    return readStoredTheme(window.localStorage);
+
+    // 添加错误处理，防止 localStorage 不可用时崩溃
+    try {
+      return readStoredTheme(window.localStorage);
+    } catch (error) {
+      console.warn("Failed to read theme from localStorage:", error);
+      return DEFAULT_THEME_ID;
+    }
   });
 
-  const preset = useMemo(() => resolvePreset(activeId), [activeId]);
-
   useEffect(() => {
-    applyTheme(preset);
+    applyTheme(themeId);
+
+    // 持久化到 localStorage，添加错误处理
     if (typeof window !== "undefined") {
-      window.localStorage.setItem(THEME_STORAGE_KEY, preset.id);
+      try {
+        window.localStorage.setItem(THEME_STORAGE_KEY, themeId);
+      } catch (error) {
+        console.warn("Failed to save theme to localStorage:", error);
+      }
     }
-  }, [preset]);
+  }, [themeId]);
 
   const value = useMemo(
     () => ({
-      preset,
+      themeId,
       presets: themePresets,
-      setTheme: setActiveId,
+      setTheme: setThemeId,
     }),
-    [preset],
+    [themeId],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
