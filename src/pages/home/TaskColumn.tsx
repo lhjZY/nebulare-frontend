@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Filter, PanelLeftClose, PanelRightClose } from "lucide-react";
+import { Filter, PanelLeftClose, PanelRightClose, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -80,7 +80,19 @@ const TaskColumn = React.memo(
   }: Props) {
     const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
     const [inputFocused, setInputFocused] = useState(false);
-    const [openGroups, setOpenGroups] = useState<string[]>([]);
+    const [openGroups, setOpenGroups] = useState<string[]>(() => {
+      const saved = localStorage.getItem("nebula.openGroups");
+      try {
+        return saved ? JSON.parse(saved) : ["今天", "明天", "最近7天", "收集箱", "所有"];
+      } catch {
+        return ["今天", "明天", "最近7天", "收集箱", "所有"];
+      }
+    });
+
+    useEffect(() => {
+      localStorage.setItem("nebula.openGroups", JSON.stringify(openGroups));
+    }, [openGroups]);
+
     const [calendarOpen, setCalendarOpen] = useState(false);
     const isInputEmpty = newTitle.trim() === "";
     const inputRef = useRef<HTMLInputElement>(null);
@@ -115,17 +127,7 @@ const TaskColumn = React.memo(
       setPendingDeleteId(null);
     };
 
-    useEffect(() => {
-      setOpenGroups((prev) => {
-        // 获取所有有任务的分组
-        const groupsWithTasks = new Set(
-          filteredGroups.filter((group) => group.tasks.length > 0).map((group) => group.group),
-        );
-        // 保留之前已展开且仍然存在的分组，同时添加新的有任务的分组
-        const merged = new Set([...prev.filter((g) => groupsWithTasks.has(g)), ...groupsWithTasks]);
-        return Array.from(merged);
-      });
-    }, [filteredGroups]);
+
 
     return (
       <Card className="flex h-full flex-col">
@@ -145,6 +147,9 @@ const TaskColumn = React.memo(
                 )}
               </Button>
               <div className="text-xl font-semibold">{columnTitle}</div>
+              {isSyncing && (
+                <RefreshCw className="h-4 w-4 animate-spin text-outline opacity-70" />
+              )}
             </div>
             <Button variant="ghost" size="sm" className="rounded-lg">
               <Filter className="h-4 w-4" />
@@ -196,9 +201,12 @@ const TaskColumn = React.memo(
             </div>
           </form>
         </CardHeader>
-        <CardContent className="hover-scroll flex-1 space-y-4">
-          {isSyncing && <p className="text-xs text-outline">同步中...</p>}
-          {lastError && <p className="text-xs text-red-500">同步失败: {lastError}</p>}
+        <CardContent className="hover-scroll flex-1 space-y-4 pt-1">
+          {lastError && (
+            <div className="rounded bg-red-50 p-2 text-xs text-red-600">
+              同步失败: {lastError}
+            </div>
+          )}
           <Accordion
             type="multiple"
             className="space-y-2"

@@ -80,7 +80,7 @@ const TaskItem = React.memo(
           // 所有 item 统一使用 border-l-4，保持 checkbox 对齐；左边距增大
           "pl-3 pr-2 border-l-4",
           selected
-            ? "bg-(--theme-sidebar-item-active) text-on-primary"
+            ? "bg-primary-12 text-on-primary"
             : "text-[#444746] hover:bg-surface-variant",
           showProjectBorder ? "rounded-r" : "border-l-transparent rounded",
           isExiting && "opacity-0 scale-95 translate-y-4",

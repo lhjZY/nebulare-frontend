@@ -14,18 +14,19 @@ import ResizeHandle from "./home/ResizeHandle";
 export default function HomePage() {
   const {
     setSyncState,
-    syncState,
     selectedProjectId,
     selectedTaskId,
     setSelectedProject,
     setSelectedTask,
   } = useAppStore();
-  const { syncNow, isSyncing, lastError, lastRun } = useSync();
+  const { syncNow, isSyncing, lastError, lastRun, isReady } = useSync();
   const [newTitle, setNewTitle] = useState("");
   const [newStartDate, setNewStartDate] = useState<number | undefined>(undefined);
   const [newDueDate, setNewDueDate] = useState<number | undefined>(undefined);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const sidebarPanelRef = useRef<ImperativePanelHandle>(null);
+
+
 
   const handleToggleSidebar = () => {
     const panel = sidebarPanelRef.current;
@@ -39,9 +40,7 @@ export default function HomePage() {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
-  React.useEffect(() => {
-    setSyncState({ isSyncing, lastError: lastError ?? null, lastRun });
-  }, [isSyncing, lastError, lastRun, setSyncState]);
+
 
   const projects = useLiveQuery(
     async () => {
@@ -141,6 +140,7 @@ export default function HomePage() {
       dueDate: newDueDate,
     });
     await db.tasks.put(task);
+    setSelectedTask(task.id);
     setNewTitle("");
     setNewStartDate(undefined);
     setNewDueDate(undefined);
@@ -194,6 +194,17 @@ export default function HomePage() {
     syncNow();
   };
 
+  if (!isReady) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-surface">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-sm text-outline">正在检查身份并同步数据...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <PanelGroup direction="horizontal" className="h-full">
       <Panel
@@ -233,8 +244,8 @@ export default function HomePage() {
           onSubmit={(e) => {
             void handleAdd(e);
           }}
-          isSyncing={syncState.isSyncing}
-          lastError={syncState.lastError}
+          isSyncing={isSyncing}
+          lastError={lastError}
           onDeleteTask={handleDeleteTask}
           onToggleComplete={handleToggleComplete}
           onUpdatePriority={handleUpdatePriority}

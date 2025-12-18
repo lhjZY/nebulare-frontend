@@ -31,6 +31,31 @@ export function setAuthFailureHandler(handler: () => void) {
   onAuthFailure = handler;
 }
 
+// 解析 JWT 负载
+function decodeJwt(token: string) {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(""),
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}
+
+export function isTokenExpired(token: string | null): boolean {
+  if (!token) return true;
+  const decoded = decodeJwt(token);
+  if (!decoded || !decoded.exp) return true;
+  // 提前 10 秒失效，留点缓冲
+  return decoded.exp * 1000 - 10000 < Date.now();
+}
+
 export const tokenStorage = {
   get(): Tokens | null {
     try {
@@ -52,6 +77,11 @@ export const tokenStorage = {
   getRefreshToken(): string | null {
     return this.get()?.refreshToken ?? null;
   },
+  // 检查当前 token 是否有效且未过期
+  isAuthenticated(): boolean {
+    const token = this.getAccessToken();
+    return !!token && !isTokenExpired(token);
+  },
 };
 
 const apiBase =
@@ -66,10 +96,9 @@ api.interceptors.request.use((config: AuthConfig) => {
   if (!config.skipAuth) {
     const access = tokenStorage.getAccessToken();
     if (access) {
-      config.headers = {
-        ...config.headers,
-        Authorization: `Bearer ${access}`,
-      };
+      if (config.headers) {
+        config.headers.set("Authorization", `Bearer ${access}`);
+      }
     }
   }
   return config;
@@ -126,10 +155,9 @@ api.interceptors.response.use(
         onAuthFailure?.();
         return Promise.reject(error);
       }
-      config.headers = {
-        ...config.headers,
-        Authorization: `Bearer ${newAccess}`,
-      };
+      if (config.headers) {
+        config.headers.set("Authorization", `Bearer ${newAccess}`);
+      }
       return api(config);
     }
 

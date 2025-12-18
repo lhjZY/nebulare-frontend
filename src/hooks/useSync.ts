@@ -10,6 +10,7 @@ type UseSyncOptions = {
 export function useSync(options: UseSyncOptions = {}) {
   const { intervalMs = 0, debounceMs = 2000 } = options;
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isReady, setIsReady] = useState(false); // 标记初始同步/鉴权检查是否完成
   const [lastError, setLastError] = useState<string | null>(null);
   const [lastRun, setLastRun] = useState<number | null>(null);
   const debounceTimer = useRef<number | null>(null);
@@ -18,6 +19,7 @@ export function useSync(options: UseSyncOptions = {}) {
   const runSync = useCallback(async () => {
     // 检查是否有 token，没有则跳过同步
     if (!tokenStorage.getAccessToken()) {
+      setIsReady(true);
       return;
     }
     if (isSyncing) return;
@@ -31,6 +33,7 @@ export function useSync(options: UseSyncOptions = {}) {
       setLastError(message);
     } finally {
       setIsSyncing(false);
+      setIsReady(true);
     }
   }, [isSyncing]);
 
@@ -74,6 +77,7 @@ export function useSync(options: UseSyncOptions = {}) {
 
   return {
     isSyncing,
+    isReady,
     lastError,
     lastRun,
     syncNow,

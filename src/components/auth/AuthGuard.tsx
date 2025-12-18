@@ -28,8 +28,9 @@ export default function AuthGuard({ children }: AuthGuardProps) {
     if (isPublicPath) return;
 
     // 检查是否有 token
-    const token = tokenStorage.getAccessToken();
-    if (!token) {
+    // 我们只检查是否存在 token，具体的过期检测和刷新交给 useSync 和 axios 拦截器
+    // 配合 HomePage 中的 isReady 状态，可以避免在鉴权完成前进行操作
+    if (!tokenStorage.getAccessToken()) {
       navigate("/login", { replace: true });
     }
   }, [location.pathname, isPublicPath, navigate]);
