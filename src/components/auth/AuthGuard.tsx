@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { tokenStorage, setAuthFailureHandler } from "@/utils/http/axios/http";
+import { logout } from "@/api/auth";
 
 type AuthGuardProps = {
   children: React.ReactNode;
@@ -18,7 +19,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   useEffect(() => {
     // 设置全局认证失败处理器
     setAuthFailureHandler(() => {
-      tokenStorage.clear();
+      void logout();
       navigate("/login", { replace: true });
     });
   }, [navigate]);

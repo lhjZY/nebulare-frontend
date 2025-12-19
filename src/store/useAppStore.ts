@@ -13,6 +13,7 @@ type AppState = {
   setSelectedProject: (id: string | null) => void;
   setSelectedTask: (id: string | null) => void;
   setSyncState: (state: Partial<SyncState>) => void;
+  reset: () => void;
 };
 
 export const useAppStore = create<AppState>((set) => ({
@@ -25,4 +26,10 @@ export const useAppStore = create<AppState>((set) => ({
     set((s) => ({
       syncState: { ...s.syncState, ...state },
     })),
+  reset: () =>
+    set({
+      selectedProjectId: null,
+      selectedTaskId: null,
+      syncState: { isSyncing: false, lastError: null, lastRun: null },
+    }),
 }));

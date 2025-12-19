@@ -15,6 +15,7 @@ import { Task, SubTask } from "@/db/schema";
 import { isCompleted, getPriorityConfig, PRIORITY_CONFIG, PriorityLevel } from "./utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/theme/theme-context";
 
 type Props = {
   task: Task | null;
@@ -33,7 +34,14 @@ export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Pro
   const newSubtaskInputRef = useRef<HTMLInputElement>(null);
   const completed = task ? isCompleted(task.status) : false;
   const [priorityOpen, setPriorityOpen] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const titleInputRef = useRef<HTMLInputElement>(null);
   const priorityConfig = task ? getPriorityConfig(task.priority) : PRIORITY_CONFIG[0];
+  const { theme } = useTheme();
+
+  // 获取编辑器主题
+  const editorTheme = theme === "dark" ? "dark" : "light";
 
   // 同步 task 内容到本地状态
   useEffect(() => {
@@ -195,7 +203,7 @@ export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Pro
   return (
     <Card className="flex h-full flex-col">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <div className="flex items-center gap-3 text-sm text-outline">
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
           <Checkbox
             ref={checkboxRef}
             checked={completed}
@@ -224,8 +232,8 @@ export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Pro
                   "h-8 justify-start text-left font-normal gap-2",
                   task?.startDate
                     ? isOverdueInTz(task.startDate)
-                      ? "text-red-500"
-                      : "text-blue-500"
+                      ? "text-destructive"
+                      : "text-primary"
                     : "text-muted-foreground",
                 )}
               >
@@ -239,7 +247,7 @@ export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Pro
           <Button
             variant="ghost"
             size="sm"
-            className={cn("gap-1 text-outline", isSubtaskMode && "bg-surface-variant")}
+            className={cn("gap-1 text-muted-foreground", isSubtaskMode && "bg-accent")}
             onClick={handleToggleMode}
             disabled={!task}
             title={isSubtaskMode ? "切换到文本模式" : "切换到子任务模式"}
@@ -251,14 +259,14 @@ export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Pro
               <Button
                 variant="ghost"
                 size="sm"
-                className={cn("text-outline", priorityConfig.color)}
+                className={cn("text-muted-foreground", priorityConfig.color)}
                 disabled={!task}
               >
                 <Flag className="h-4 w-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-2" align="end">
-              <div className="text-xs text-outline mb-2 px-1">优先级</div>
+              <div className="text-xs text-muted-foreground mb-2 px-1">优先级</div>
               <div className="flex items-center gap-2">
                 {([3, 2, 1, 0] as PriorityLevel[]).map((level) => {
                   const config = PRIORITY_CONFIG[level];
@@ -267,8 +275,8 @@ export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Pro
                       key={level}
                       onClick={() => handlePriorityChange(level)}
                       className={cn(
-                        "p-2 rounded hover:bg-surface-variant transition-colors",
-                        task?.priority === level && "bg-surface-variant",
+                        "p-2 rounded-md hover:bg-accent transition-colors",
+                        task?.priority === level && "bg-accent",
                       )}
                       title={config.label}
                     >
@@ -282,23 +290,58 @@ export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Pro
         </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col space-y-4 overflow-hidden">
-        <CardTitle
-          className={cn(
-            "text-xl font-semibold transition-all duration-300",
-            completed && "line-through text-outline",
-            isExiting && "opacity-50",
-          )}
-        >
-          {task ? task.title : "请选择任务"}
-        </CardTitle>
+        {isEditingTitle && task ? (
+          <input
+            ref={titleInputRef}
+            type="text"
+            value={editedTitle}
+            onChange={(e) => setEditedTitle(e.target.value)}
+            onBlur={() => {
+              if (editedTitle.trim() && editedTitle !== task.title) {
+                onUpdateTask(task.id, { title: editedTitle.trim() });
+              }
+              setIsEditingTitle(false);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.currentTarget.blur();
+              } else if (e.key === "Escape") {
+                setEditedTitle(task.title);
+                setIsEditingTitle(false);
+              }
+            }}
+            className={cn(
+              "w-full text-xl font-semibold bg-transparent border-none outline-none focus:ring-0 p-0 transition-all duration-300",
+              completed && "line-through text-muted-foreground",
+            )}
+            autoFocus
+          />
+        ) : (
+          <div
+            className={cn(
+              "text-xl font-semibold transition-all duration-300 cursor-text",
+              completed && "line-through text-muted-foreground",
+              isExiting && "opacity-50",
+            )}
+            onClick={() => {
+              if (task) {
+                setEditedTitle(task.title);
+                setIsEditingTitle(true);
+                setTimeout(() => titleInputRef.current?.focus(), 0);
+              }
+            }}
+          >
+            {task ? task.title : "请选择任务"}
+          </div>
+        )}
 
         {progress && (
-          <div className="flex items-center gap-2 text-xs text-outline">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <ListChecks className="h-4 w-4" />
             <span>
               子任务进度: {progress.completed}/{progress.total}
             </span>
-            <div className="flex-1 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+            <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
               <div
                 className="h-full bg-primary transition-all duration-300"
                 style={{ width: `${(progress.completed / progress.total) * 100}%` }}
@@ -309,7 +352,7 @@ export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Pro
 
         <div className="flex-1 min-h-0 overflow-auto">
           {!task ? (
-            <div className="h-full rounded-2xl border border-outline/20 bg-surface p-4 text-sm text-outline flex items-center justify-center">
+            <div className="h-full rounded-lg border border-border bg-muted p-4 text-sm text-muted-foreground flex items-center justify-center">
               未选择任务
             </div>
           ) : isSubtaskMode ? (
@@ -320,7 +363,7 @@ export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Pro
                 .map((subtask) => (
                   <div
                     key={subtask.id}
-                    className="flex items-center gap-3 p-2 rounded hover:bg-surface-variant transition-colors"
+                    className="flex items-center gap-3 p-2 rounded-md hover:bg-accent transition-colors"
                   >
                     <Checkbox
                       checked={subtask.completed}
@@ -329,7 +372,7 @@ export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Pro
                     <span
                       className={cn(
                         "text-sm flex-1",
-                        subtask.completed && "line-through text-outline",
+                        subtask.completed && "line-through text-muted-foreground",
                       )}
                     >
                       {subtask.title}
@@ -338,14 +381,14 @@ export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Pro
                 ))}
               {/* 新子任务输入框 */}
               <div className="flex items-center gap-3 p-2">
-                <Plus className="h-4 w-4 text-outline" />
+                <Plus className="h-4 w-4 text-muted-foreground" />
                 <Input
                   ref={newSubtaskInputRef}
                   value={newSubtaskTitle}
                   onChange={(e) => setNewSubtaskTitle(e.target.value)}
                   onKeyDown={handleSubtaskInputKeyDown}
                   placeholder="添加子任务，按 Enter 确认"
-                  className="flex-1 h-8 border-none shadow-none focus-visible:ring-0 bg-transparent placeholder:text-outline/50"
+                  className="flex-1 h-8 border-none shadow-none focus-visible:ring-0 bg-transparent placeholder:text-muted-foreground/50"
                 />
               </div>
             </div>
@@ -355,6 +398,7 @@ export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Pro
               modelValue={content}
               onChange={handleContentChange}
               language="zh-CN"
+              theme={editorTheme}
               preview={false}
               toolbars={[
                 "bold",

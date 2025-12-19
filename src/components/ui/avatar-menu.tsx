@@ -1,14 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@/api/auth";
-import { Palette, LogOut } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "./avatar";
-import defaultImage from "@/assets/avatar.jpeg";
-type AvatarMenuProps = {
-  onOpenThemeDialog?: () => void;
-};
+import { LogOut, User } from "lucide-react";
+import { Avatar, AvatarFallback } from "./avatar";
 
-export default function AvatarMenu({ onOpenThemeDialog }: AvatarMenuProps) {
+export default function AvatarMenu() {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -27,8 +23,8 @@ export default function AvatarMenu({ onOpenThemeDialog }: AvatarMenuProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     setOpen(false);
     navigate("/login", { replace: true });
   };
@@ -37,30 +33,16 @@ export default function AvatarMenu({ onOpenThemeDialog }: AvatarMenuProps) {
     <div ref={containerRef} className="relative">
       <Avatar
         onClick={() => setOpen((v) => !v)}
-        className="h-10 w-10 rounded-full grid place-items-center text-lg hover:opacity-90 cursor-pointer"
+        className="h-9 w-9 rounded-full grid place-items-center text-lg hover:opacity-90 cursor-pointer border border-border"
       >
-        <AvatarImage src={defaultImage} />
-        <AvatarFallback>N</AvatarFallback>
+        <AvatarFallback className="bg-muted">
+          <User className="h-4 w-4 text-muted-foreground" />
+        </AvatarFallback>
       </Avatar>
       {open ? (
-        <div
-          className="absolute left-12 top-0 z-50 w-40 rounded-xl border border-outline/20 bg-white shadow-md"
-          style={{
-            backgroundColor: "rgba(var(--color-main-background),1)",
-          }}
-        >
+        <div className="absolute right-0 top-12 z-50 w-40 rounded-lg border border-border bg-popover shadow-md overflow-hidden">
           <button
-            className="w-full px-4 py-3 text-left text-sm hover:bg-surface-variant flex items-center justify-start"
-            onClick={() => {
-              setOpen(false);
-              onOpenThemeDialog?.();
-            }}
-          >
-            <Palette className="w-4 h-4" />
-            <span className="pl-2">更换主题</span>
-          </button>
-          <button
-            className="w-full px-4 py-3 text-left text-sm hover:bg-surface-variant flex items-center justify-start"
+            className="w-full px-4 py-3 text-left text-sm text-destructive hover:bg-destructive/10 flex items-center justify-start transition-colors"
             onClick={handleLogout}
           >
             <LogOut className="w-4 h-4" />

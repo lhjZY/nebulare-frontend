@@ -83,9 +83,9 @@ const TaskColumn = React.memo(
     const [openGroups, setOpenGroups] = useState<string[]>(() => {
       const saved = localStorage.getItem("nebula.openGroups");
       try {
-        return saved ? JSON.parse(saved) : ["今天", "明天", "最近7天", "收集箱", "所有"];
+        return saved ? JSON.parse(saved) : ["今天", "明天", "最近7天", "随手待办", "所有"];
       } catch {
-        return ["今天", "明天", "最近7天", "收集箱", "所有"];
+        return ["今天", "明天", "最近7天", "随手待办", "所有"];
       }
     });
 
@@ -148,7 +148,7 @@ const TaskColumn = React.memo(
               </Button>
               <div className="text-xl font-semibold">{columnTitle}</div>
               {isSyncing && (
-                <RefreshCw className="h-4 w-4 animate-spin text-outline opacity-70" />
+                <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground opacity-70" />
               )}
             </div>
             <Button variant="ghost" size="sm" className="rounded-lg">
@@ -164,8 +164,8 @@ const TaskColumn = React.memo(
               onBlur={() => setInputFocused(false)}
               ref={inputRef}
               className={cn(
-                "mt-1 w-full border border-solid rounded-default border-transparent bg-grey-3 pr-[170px] transition-colors focus:border-primary focus:outline-none",
-                !inputFocused && isInputEmpty ? "bg-gray-100" : "bg-white",
+                "mt-1 w-full border border-input rounded-md pr-[170px] transition-colors focus:border-ring focus:outline-none",
+                !inputFocused && isInputEmpty ? "bg-muted" : "bg-background",
               )}
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -203,7 +203,7 @@ const TaskColumn = React.memo(
         </CardHeader>
         <CardContent className="hover-scroll flex-1 space-y-4 pt-1">
           {lastError && (
-            <div className="rounded bg-red-50 p-2 text-xs text-red-600">
+            <div className="rounded-md bg-destructive/10 p-2 text-xs text-destructive">
               同步失败: {lastError}
             </div>
           )}
@@ -217,7 +217,7 @@ const TaskColumn = React.memo(
               <AccordionItem key={group.group} value={group.group}>
                 <AccordionTrigger>
                   <span className={group.accent}>{group.group}</span>
-                  <span className="text-xs text-outline">({group.tasks.length})</span>
+                  <span className="text-xs text-muted-foreground">({group.tasks.length})</span>
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-1">
@@ -225,7 +225,7 @@ const TaskColumn = React.memo(
                       <TaskItem
                         key={task.id}
                         task={task as Task}
-                        projectName={projectLookup.get(task.projectId)?.name || "收集箱"}
+                        projectName={projectLookup.get(task.projectId)?.name || "随手待办"}
                         projectColor={projectLookup.get(task.projectId)?.color}
                         selected={selectedTaskId === task.id}
                         onSelect={() => onSelectTask(task.id)}

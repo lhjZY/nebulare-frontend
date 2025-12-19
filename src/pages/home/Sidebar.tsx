@@ -89,7 +89,7 @@ export default function Sidebar({
     },
     {
       key: "inbox",
-      label: "收集箱",
+      label: "随手待办",
       icon: Inbox,
       count: tasks.filter((t) => t.projectId === "inbox").length,
     },
@@ -178,10 +178,8 @@ export default function Sidebar({
 
   return (
     <>
-      <Card
-        className="project-list-scroller flex h-full flex-col pt-5"
-      >
-        <CardContent className="hover-scroll flex-1 pt-0 space-y-4">
+      <div className="flex h-full flex-col bg-sidebar pt-5">
+        <div className="hover-scroll flex-1 px-4 space-y-4">
           <Section>
             {smartLists.map((item) => (
               <SidebarItem
@@ -194,7 +192,7 @@ export default function Sidebar({
               >
                 <item.icon className="h-4 w-4" />
                 <span className="flex-1">{item.label}</span>
-                <Badge variant="muted">{item.count}</Badge>
+                <Badge variant="secondary">{item.count}</Badge>
               </SidebarItem>
             ))}
           </Section>
@@ -202,7 +200,7 @@ export default function Sidebar({
           <div className="space-y-1">
             <div
               onClick={() => setProjectsExpanded(!projectsExpanded)}
-              className="w-full flex items-center justify-between text-xs font-medium uppercase text-outline hover:text-on-surface transition-colors cursor-pointer select-none"
+              className="w-full flex items-center justify-between text-xs font-medium uppercase text-muted-foreground hover:text-foreground transition-colors cursor-pointer select-none"
             >
               <div className={cn("flex items-center gap-1")}>
                 <ChevronDown
@@ -256,8 +254,8 @@ export default function Sidebar({
               </div>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* 项目创建弹窗 */}
       <ProjectModal
@@ -308,10 +306,10 @@ function SidebarItem({
       onClick={onClick}
       data-selected={active}
       className={cn(
-        "flex w-full gap-2 items-center rounded px-3 py-3 text-sm transition cursor-pointer hover:bg-primary-8",
+        "flex w-full gap-2 items-center rounded-md px-3 py-2.5 text-sm transition cursor-pointer",
         active
-          ? "bg-primary-12 text-on-primary"
-          : "hover:bg-primary-8",
+          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+          : "text-sidebar-foreground hover:bg-sidebar-accent/50",
       )}
     >
       {children}
@@ -341,8 +339,10 @@ function ProjectItem({
       onClick={onClick}
       data-selected={active}
       className={cn(
-        "group flex w-full gap-2 items-center rounded px-3 py-3 text-sm transition cursor-pointer",
-        active ? "bg-primary-12 text-on-primary" : "text-[#444746] hover:bg-primary-8",
+        "group flex w-full gap-2 items-center rounded-md px-3 py-2.5 text-sm transition cursor-pointer",
+        active
+          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+          : "text-sidebar-foreground hover:bg-sidebar-accent/50",
       )}
     >
       {/* Left: Logs icon and project name */}
@@ -351,7 +351,7 @@ function ProjectItem({
 
       {/* Right: color indicator and count */}
       <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: project.color }} />
-      <Badge variant="muted" className="shrink-0">
+      <Badge variant="secondary" className="shrink-0">
         {count}
       </Badge>
 
@@ -374,7 +374,7 @@ function ProjectItem({
         </PopoverTrigger>
         <PopoverContent className="w-32 p-1" align="end" onClick={(e) => e.stopPropagation()}>
           <button
-            className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-surface-variant transition-colors"
+            className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent transition-colors"
             onClick={() => {
               setPopoverOpen(false);
               onEdit();
@@ -384,7 +384,7 @@ function ProjectItem({
             <span>编辑</span>
           </button>
           <button
-            className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+            className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-destructive hover:bg-destructive/10 transition-colors"
             onClick={() => {
               setPopoverOpen(false);
               onDelete();

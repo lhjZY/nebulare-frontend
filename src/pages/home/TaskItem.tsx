@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import CalendarModal from "@/components/modals/CalendarModal";
 import { isCompleted, getPriorityConfig, PRIORITY_CONFIG, PriorityLevel } from "./utils";
 import { getTaskItemDateLabel, isOverdueInTz } from "@/lib/dayjs";
+
 type Props = {
   task: Task;
   projectName: string;
@@ -36,7 +37,10 @@ const TaskItem = React.memo(
     const [isExiting, setIsExiting] = useState(false);
     const [calendarOpen, setCalendarOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [editedTitle, setEditedTitle] = useState(task.title);
     const checkboxRef = useRef<HTMLButtonElement>(null);
+    const titleInputRef = useRef<HTMLInputElement>(null);
     const completed = isCompleted(task.status);
     const priorityConfig = getPriorityConfig(task.priority);
 
@@ -76,13 +80,13 @@ const TaskItem = React.memo(
     return (
       <div
         className={cn(
-          "group flex w-full items-center gap-3 py-1 text-left hover:bg-surface-variant cursor-pointer transition-all duration-300",
+          "group flex w-full items-center gap-3 py-1.5 text-left hover:bg-accent cursor-pointer transition-all duration-300",
           // 所有 item 统一使用 border-l-4，保持 checkbox 对齐；左边距增大
           "pl-3 pr-2 border-l-4",
           selected
-            ? "bg-primary-12 text-on-primary"
-            : "text-[#444746] hover:bg-surface-variant",
-          showProjectBorder ? "rounded-r" : "border-l-transparent rounded",
+            ? "bg-accent text-accent-foreground"
+            : "text-foreground hover:bg-accent/50",
+          showProjectBorder ? "rounded-r-md" : "border-l-transparent rounded-md",
           isExiting && "opacity-0 scale-95 translate-y-4",
         )}
         style={showProjectBorder ? { borderLeftColor: projectColor } : undefined}
@@ -104,12 +108,48 @@ const TaskItem = React.memo(
           className={!completed ? priorityConfig.borderColor : undefined}
         />
         <div className="flex-1 min-w-0">
-          <div className={cn("text-sm truncate", completed && "line-through text-outline")}>
-            {task.title}
-          </div>
+          {isEditingTitle ? (
+            <input
+              ref={titleInputRef}
+              type="text"
+              value={editedTitle}
+              onChange={(e) => setEditedTitle(e.target.value)}
+              onBlur={() => {
+                if (editedTitle.trim() && editedTitle !== task.title) {
+                  onUpdateTask(task.id, { title: editedTitle.trim() });
+                } else {
+                  setEditedTitle(task.title);
+                }
+                setIsEditingTitle(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.currentTarget.blur();
+                } else if (e.key === "Escape") {
+                  setEditedTitle(task.title);
+                  setIsEditingTitle(false);
+                }
+              }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full text-sm bg-transparent border-none outline-none focus:ring-0 p-0"
+              autoFocus
+            />
+          ) : (
+            <div
+              className={cn("text-sm truncate cursor-text", completed && "line-through text-muted-foreground")}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditingTitle(true);
+                setEditedTitle(task.title);
+                setTimeout(() => titleInputRef.current?.focus(), 0);
+              }}
+            >
+              {task.title}
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-xs text-outline truncate max-w-[80px]">{projectName}</span>
+          <span className="text-xs text-muted-foreground truncate max-w-[80px]">{projectName}</span>
           <CalendarModal
             open={calendarOpen}
             onOpenChange={setCalendarOpen}
@@ -127,8 +167,8 @@ const TaskItem = React.memo(
                   "p-0 h-9 justify-end text-right font-normal border-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent",
                   task.startDate
                     ? isOverdueInTz(task.startDate)
-                      ? "text-red-500"
-                      : "text-blue-500"
+                      ? "text-destructive"
+                      : "text-primary"
                     : "text-muted-foreground",
                 )}
               >
@@ -143,14 +183,14 @@ const TaskItem = React.memo(
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
-                className="rounded-full p-1 text-outline hover:bg-surface-variant opacity-0 group-hover:opacity-100 transition-opacity"
+                className="rounded-full p-1 text-muted-foreground hover:bg-accent opacity-0 group-hover:opacity-100 transition-opacity"
                 aria-label="更多操作"
               >
                 <MoreHorizontal className="h-4 w-4" />
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-2" align="end" onClick={(e) => e.stopPropagation()}>
-              <div className="text-xs text-outline mb-2 px-1">优先级</div>
+              <div className="text-xs text-muted-foreground mb-2 px-1">优先级</div>
               <div className="flex items-center gap-2 mb-2">
                 {([3, 2, 1, 0] as PriorityLevel[]).map((level) => {
                   const config = PRIORITY_CONFIG[level];
@@ -162,8 +202,8 @@ const TaskItem = React.memo(
                         setMenuOpen(false);
                       }}
                       className={cn(
-                        "p-2 rounded hover:bg-surface-variant transition-colors",
-                        task.priority === level && "bg-surface-variant",
+                        "p-2 rounded-md hover:bg-accent transition-colors",
+                        task.priority === level && "bg-accent",
                       )}
                       title={config.label}
                     >
@@ -172,13 +212,13 @@ const TaskItem = React.memo(
                   );
                 })}
               </div>
-              <div className="border-t pt-1">
+              <div className="border-t border-border pt-1">
                 <button
                   onClick={() => {
                     setMenuOpen(false);
                     onDelete();
                   }}
-                  className="w-full flex items-center gap-2 px-2 py-2 text-sm text-red-500 hover:bg-surface-variant rounded transition-colors"
+                  className="w-full flex items-center gap-2 px-2 py-2 text-sm text-destructive hover:bg-destructive/10 rounded-md transition-colors"
                 >
                   <Trash2 className="h-4 w-4" />
                   <span>删除</span>

@@ -26,7 +26,7 @@ export default function LoginPage() {
   const subheading = mode === "login" ? "使用邮箱和密码继续" : "创建并验证你的账户";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="absolute top-8 left-8 flex items-center gap-3 z-10">
         <Sparkles className="h-8 w-8 text-primary" />
         <h1 className="text-xl font-bold text-foreground">
@@ -42,8 +42,8 @@ export default function LoginPage() {
       >
         <div className="mx-auto w-full max-w-md">
           <div className="mb-8 text-center">
-            <h1 className="mt-4 text-3xl font-semibold text-on-surface">{heading}</h1>
-            <p className="text-sm text-outline">{subheading}</p>
+            <h1 className="mt-4 text-3xl font-semibold text-foreground">{heading}</h1>
+            <p className="text-sm text-muted-foreground">{subheading}</p>
           </div>
 
           <AuthForm

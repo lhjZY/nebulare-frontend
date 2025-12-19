@@ -1,4 +1,6 @@
 import { defHttp, tokenStorage, Tokens } from "@/utils/http/axios";
+import { db } from "@/db";
+import { useAppStore } from "@/store/useAppStore";
 
 export interface LoginParams {
   email: string;
@@ -23,6 +25,9 @@ export function register(data: RegisterParams): Promise<{ status: string }> {
 }
 
 export async function verify(data: VerifyParams): Promise<Tokens> {
+  // 先清理旧数据
+  await logout();
+
   const tokens = await defHttp.post<Tokens>({
     url: "/auth/verify",
     data,
@@ -32,6 +37,9 @@ export async function verify(data: VerifyParams): Promise<Tokens> {
 }
 
 export async function login(data: LoginParams): Promise<Tokens> {
+  // 先清理旧数据
+  await logout();
+
   const tokens = await defHttp.post<Tokens>({
     url: "/auth/login",
     data,
@@ -50,7 +58,14 @@ export async function refresh(): Promise<Tokens> {
   return tokens;
 }
 
-export function logout() {
+export async function logout() {
   tokenStorage.clear();
-  // TODO: 清理本地 IndexedDB 数据（tasks/projects），按需在调用方处理
+  // 清理本地 IndexedDB 数据
+  try {
+    await Promise.all([db.tasks.clear(), db.projects.clear(), db.meta.clear()]);
+  } catch (err) {
+    console.error("Failed to clear IndexedDB:", err);
+  }
+  // 重置 Store 状态
+  useAppStore.getState().reset();
 }

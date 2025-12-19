@@ -75,7 +75,7 @@ export default function HomePage() {
       return allTasks;
     }
 
-    // 收集箱：只显示未分配项目的任务
+    // 随手待办：只显示未分配项目的任务
     if (selectedProjectId === "inbox") {
       return allTasks.filter((t) => t.projectId === "inbox");
     }
@@ -100,7 +100,7 @@ export default function HomePage() {
 
   // SmartList 映射
   const smartListLabels: Record<string, string> = {
-    inbox: "收集箱",
+    inbox: "随手待办",
     all: "所有",
     today: "今天",
     tomorrow: "明天",
@@ -120,7 +120,7 @@ export default function HomePage() {
 
   const inputPlaceholder = useMemo(() => {
     if (!selectedProjectId || isSmartList) {
-      return "+ 添加任务到收集箱";
+      return "+ 添加任务到随手待办";
     }
     const projectName = projectLookup.get(selectedProjectId)?.name ?? "项目";
     return `+ 添加任务到「${projectName}」中`;
@@ -196,10 +196,10 @@ export default function HomePage() {
 
   if (!isReady) {
     return (
-      <div className="flex h-screen items-center justify-center bg-surface">
+      <div className="flex h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-sm text-outline">正在检查身份并同步数据...</p>
+          <p className="text-sm text-muted-foreground">正在检查身份并同步数据...</p>
         </div>
       </div>
     );
@@ -211,9 +211,9 @@ export default function HomePage() {
         id="sidebar"
         order={1}
         ref={sidebarPanelRef}
-        defaultSize={20}
+        defaultSize={12}
         minSize={12}
-        maxSize={60}
+        maxSize={20}
         collapsible
         collapsedSize={0}
         onCollapse={() => setSidebarCollapsed(true)}

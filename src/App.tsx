@@ -2,22 +2,21 @@ import React from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import AuthPage from "./pages/LoginPage";
-import { ThemePaletteDialog } from "@/components/theme/ThemePaletteDialog";
-import Sidebar from "@/components/layout/Sidebar";
+import Header from "@/components/layout/Header";
 import AuthGuard from "@/components/auth/AuthGuard";
+
 function App() {
   const location = useLocation();
-  const [themeDialogOpen, setThemeDialogOpen] = React.useState(false);
-  const hideSidebar = location.pathname === "/login" || location.pathname === "/register";
+  const hideHeader = location.pathname === "/login" || location.pathname === "/register";
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-surface text-on-surface">
-        <div className="flex h-screen">
-          {!hideSidebar && <Sidebar setThemeDialogOpen={setThemeDialogOpen} />}
+      <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+        <div className="flex flex-col h-screen">
+          {!hideHeader && <Header />}
 
-          <main className="flex-1">
-            <div className="h-full bg-white shadow-xs">
+          <main className="flex-1 overflow-hidden">
+            <div className="h-full bg-background">
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<AuthPage />} />
@@ -26,7 +25,6 @@ function App() {
             </div>
           </main>
         </div>
-        <ThemePaletteDialog open={themeDialogOpen} onOpenChange={setThemeDialogOpen} />
       </div>
     </AuthGuard>
   );

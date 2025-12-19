@@ -114,7 +114,7 @@ export function AuthForm({ mode, onSuccess, title, subtitle, footer }: AuthFormP
       return (
         <>
           <div className="grid gap-2">
-            <label className="text-sm font-medium text-on-surface" htmlFor="email">
+            <label className="text-sm font-medium text-foreground" htmlFor="email">
               邮箱
             </label>
             <Input
@@ -127,7 +127,7 @@ export function AuthForm({ mode, onSuccess, title, subtitle, footer }: AuthFormP
             />
           </div>
           <div className="grid gap-2">
-            <label className="text-sm font-medium text-on-surface" htmlFor="password">
+            <label className="text-sm font-medium text-foreground" htmlFor="password">
               密码
             </label>
             <div className="relative">
@@ -143,7 +143,7 @@ export function AuthForm({ mode, onSuccess, title, subtitle, footer }: AuthFormP
               <button
                 type="button"
                 aria-label={showPassword ? "隐藏密码" : "显示密码"}
-                className="absolute inset-y-0 right-0 flex items-center px-3 text-outline hover:text-on-surface"
+                className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
                 onClick={() => setShowPassword((prev) => !prev)}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -156,7 +156,7 @@ export function AuthForm({ mode, onSuccess, title, subtitle, footer }: AuthFormP
 
     return (
       <div className="grid gap-2">
-        <label className="text-sm font-medium text-on-surface" htmlFor="code">
+        <label className="text-sm font-medium text-foreground" htmlFor="code">
           验证码
         </label>
         <Input
@@ -181,7 +181,7 @@ export function AuthForm({ mode, onSuccess, title, subtitle, footer }: AuthFormP
     <Card className="shadow-md">
       <CardHeader className="space-y-1">
         <CardTitle className="text-xl font-semibold">{currentTitle}</CardTitle>
-        <p className="text-sm text-outline">{currentSubtitle}</p>
+        <p className="text-sm text-muted-foreground">{currentSubtitle}</p>
       </CardHeader>
       <CardContent>
         <form className="grid gap-4" onSubmit={onSubmit}>
@@ -190,8 +190,8 @@ export function AuthForm({ mode, onSuccess, title, subtitle, footer }: AuthFormP
             {buttonLabel}
           </Button>
         </form>
-        {message && <p className="text-sm text-outline text-center mt-3">{message}</p>}
-        {footer && <div className="mt-4 text-sm text-outline text-center">{footer}</div>}
+        {message && <p className="text-sm text-muted-foreground text-center mt-3">{message}</p>}
+        {footer && <div className="mt-4 text-sm text-muted-foreground text-center">{footer}</div>}
       </CardContent>
     </Card>
   );
