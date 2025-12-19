@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useRef } from "react";
 import { v4 as uuid } from "uuid";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Panel, PanelGroup, ImperativePanelHandle } from "react-resizable-panels";
+import { Panel, Group, PanelImperativeHandle } from "react-resizable-panels";
 import { db, createLocalTask } from "@/db";
 import { useSync } from "@/hooks/useSync";
 import { useAppStore } from "@/store/useAppStore";
@@ -24,7 +24,7 @@ export default function HomePage() {
   const [newStartDate, setNewStartDate] = useState<number | undefined>(undefined);
   const [newDueDate, setNewDueDate] = useState<number | undefined>(undefined);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const sidebarPanelRef = useRef<ImperativePanelHandle>(null);
+  const sidebarPanelRef = useRef<PanelImperativeHandle>(null);
 
 
 
@@ -37,7 +37,7 @@ export default function HomePage() {
     } else {
       panel.collapse();
     }
-    setSidebarCollapsed(!sidebarCollapsed);
+    // Note: setSidebarCollapsed is now handled by onResize callback
   };
 
 
@@ -206,18 +206,19 @@ export default function HomePage() {
   }
 
   return (
-    <PanelGroup direction="horizontal" className="h-full">
+    <Group orientation="horizontal" className="h-full">
       <Panel
         id="sidebar"
-        order={1}
-        ref={sidebarPanelRef}
-        defaultSize={12}
-        minSize={12}
-        maxSize={20}
+        panelRef={sidebarPanelRef}
+        defaultSize="12%"
+        minSize="12%"
+        maxSize="20%"
         collapsible
-        collapsedSize={0}
-        onCollapse={() => setSidebarCollapsed(true)}
-        onExpand={() => setSidebarCollapsed(false)}
+        collapsedSize="0%"
+        onResize={(size) => {
+          // In the new API, we detect collapsed state by checking if size is at collapsedSize (0)
+          setSidebarCollapsed(size.asPercentage === 0);
+        }}
       >
         <Sidebar
           projects={projects ?? []}
@@ -228,7 +229,7 @@ export default function HomePage() {
         />
       </Panel>
       <ResizeHandle />
-      <Panel id="main" order={2} defaultSize={60} minSize={40}>
+      <Panel id="main" defaultSize="60%" minSize="40%">
         <TaskColumn
           groups={groupedTasks}
           projectLookup={projectLookup}
@@ -257,7 +258,7 @@ export default function HomePage() {
         />
       </Panel>
       <ResizeHandle />
-      <Panel id="detail" order={3} defaultSize={20} minSize={18} maxSize={35}>
+      <Panel id="detail" defaultSize="20%" minSize="18%" maxSize="35%">
         {detailTask ? (
           <TaskDetail
             task={detailTask}
@@ -269,6 +270,6 @@ export default function HomePage() {
           <div className="h-full bg-background" />
         )}
       </Panel>
-    </PanelGroup>
+    </Group>
   );
 }

@@ -74,7 +74,8 @@ export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Pro
     });
   };
 
-  const handleCheckChange = (checked: boolean) => {
+  const handleCheckChange = (checked: boolean | "indeterminate") => {
+    if (typeof checked === "string") return;
     if (!task) return;
     if (checked && !completed) {
       triggerConfetti();
@@ -319,7 +320,7 @@ export default function TaskDetail({ task, onToggleComplete, onUpdateTask }: Pro
         ) : (
           <div
             className={cn(
-              "text-xl font-semibold transition-all duration-300 cursor-text",
+              "text-xl font-semibold transition-all duration-300 cursor-pointer",
               completed && "line-through text-muted-foreground",
               isExiting && "opacity-50",
             )}

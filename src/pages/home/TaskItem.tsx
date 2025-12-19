@@ -61,7 +61,8 @@ const TaskItem = React.memo(
       });
     };
 
-    const handleCheckChange = (checked: boolean) => {
+    const handleCheckChange = (checked: boolean | "indeterminate") => {
+      if (typeof checked === "string") return;
       if (checked && !completed) {
         triggerConfetti();
         setIsExiting(true);
@@ -136,9 +137,10 @@ const TaskItem = React.memo(
             />
           ) : (
             <div
-              className={cn("text-sm truncate cursor-text", completed && "line-through text-muted-foreground")}
+              className={cn("text-sm truncate cursor-pointer", completed && "line-through text-muted-foreground")}
               onClick={(e) => {
                 e.stopPropagation();
+                onSelect();
                 setIsEditingTitle(true);
                 setEditedTitle(task.title);
                 setTimeout(() => titleInputRef.current?.focus(), 0);
