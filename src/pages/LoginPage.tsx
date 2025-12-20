@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { SparklesText } from "@/components/ui/sparkles-text";
 import { WarpBackground } from "@/components/ui/warp-background";
-import { Sparkles } from "lucide-react";
+
 type AuthMode = "login" | "register";
 
 export default function LoginPage() {
@@ -28,7 +28,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="absolute top-8 left-8 flex items-center gap-3 z-10">
-        <Sparkles className="h-8 w-8 text-primary" />
+        <img src="/workflow.svg" alt="Logo" className="h-8 w-8" />
         <h1 className="text-xl font-bold text-foreground">
           <SparklesText className="text-2xl font-bold">星云工作流</SparklesText>
         </h1>
