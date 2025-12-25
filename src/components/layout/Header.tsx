@@ -1,4 +1,5 @@
 import AvatarMenu from "@/components/ui/avatar-menu";
+import WorkflowIcon from '@/components/ui/workflow';
 import { Link, useLocation } from "react-router-dom";
 import { ListTodo } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
@@ -22,7 +23,7 @@ export default function Header() {
           className="flex items-center gap-2 text-foreground hover:text-foreground/80 transition-colors"
           to="/"
         >
-          <img src="/workflow.svg" alt="Nebula Logo" className="h-5 w-5" />
+          <WorkflowIcon />
           <span className="font-semibold text-lg">Nebula</span>
         </Link>
       </div>
